@@ -1,0 +1,17 @@
+body {
+  background-color: gray;
+}
+.GameStartScreen{
+  width: 800px;
+  height: 600px;
+  background-color: black;
+  color:white;
+  margin: auto;
+  text-align: center;
+}
+.board{
+  width:100%;
+position: relative;
+background-color: gray;
+  text-align: center;
+}

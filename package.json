@@ -1,5 +1,5 @@
 {
-  "name": "reactclientserver",
+  "name": "reactGame",
   "version": "0.1.0",
   "description": "A react-express webapp",
   "main": "app.js",
