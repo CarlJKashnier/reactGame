@@ -60,7 +60,7 @@ class GameBoard extends React.Component {
       }
       //left 37
       if (e.keyCode === 37) {
-          if (this.state.roomArrayRender[PlayerPostitionY ][PlayerPositionX -1] !== 3 && this.state.roomArrayRender[PlayerPostitionY][PlayerPositionX-1] !== 1) {
+          if (this.state.roomArrayRender[PlayerPostitionY ][PlayerPositionX -1] !== 3 && this.state.roomArrayRender[PlayerPostitionY][PlayerPositionX-1] !== 1 && PlayerPositionX-1 > -1) {
               let tempArrForMove = this.state.player;
               tempArrForMove.splice(2, 1, [PlayerPositionX - 1, PlayerPostitionY])
               this.setState({
@@ -71,7 +71,7 @@ class GameBoard extends React.Component {
       }
       //right 39
       if (e.keyCode === 39) {
-          if (this.state.roomArrayRender[PlayerPostitionY ][PlayerPositionX +1] !== 3 && this.state.roomArrayRender[PlayerPostitionY][PlayerPositionX+1] !== 1) {
+          if (this.state.roomArrayRender[PlayerPostitionY ][PlayerPositionX +1] !== 3 && this.state.roomArrayRender[PlayerPostitionY][PlayerPositionX+1] !== 1 && this.state.roomArrayRender[PlayerPostitionY].length > PlayerPositionX+1 ) {
               let tempArrForMove = this.state.player;
               tempArrForMove.splice(2, 1, [PlayerPositionX + 1, PlayerPostitionY])
               this.setState({

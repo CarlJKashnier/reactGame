@@ -139,7 +139,7 @@
 	            }
 	            //left 37
 	            if (e.keyCode === 37) {
-	                if (this.state.roomArrayRender[PlayerPostitionY][PlayerPositionX - 1] !== 3 && this.state.roomArrayRender[PlayerPostitionY][PlayerPositionX - 1] !== 1) {
+	                if (this.state.roomArrayRender[PlayerPostitionY][PlayerPositionX - 1] !== 3 && this.state.roomArrayRender[PlayerPostitionY][PlayerPositionX - 1] !== 1 && PlayerPositionX - 1 > -1) {
 	                    var _tempArrForMove2 = this.state.player;
 	                    _tempArrForMove2.splice(2, 1, [PlayerPositionX - 1, PlayerPostitionY]);
 	                    this.setState({
@@ -149,7 +149,7 @@
 	            }
 	            //right 39
 	            if (e.keyCode === 39) {
-	                if (this.state.roomArrayRender[PlayerPostitionY][PlayerPositionX + 1] !== 3 && this.state.roomArrayRender[PlayerPostitionY][PlayerPositionX + 1] !== 1) {
+	                if (this.state.roomArrayRender[PlayerPostitionY][PlayerPositionX + 1] !== 3 && this.state.roomArrayRender[PlayerPostitionY][PlayerPositionX + 1] !== 1 && this.state.roomArrayRender[PlayerPostitionY].length > PlayerPositionX + 1) {
 	                    var _tempArrForMove3 = this.state.player;
 	                    _tempArrForMove3.splice(2, 1, [PlayerPositionX + 1, PlayerPostitionY]);
 	                    this.setState({
