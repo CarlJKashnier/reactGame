@@ -85,8 +85,8 @@
 	    var _this = (0, _possibleConstructorReturn3.default)(this, (GameBoard.__proto__ || (0, _getPrototypeOf2.default)(GameBoard)).call(this, props));
 
 	    _this.state = {
-	      gameWidth: '800px',
-	      gameHeight: '600px',
+	      gameWidth: 800,
+	      gameHeight: 600,
 	      gameLength: '', //Super Short, Short, Fun, Liking it, I have no life -- Seriously
 	      gameChallange: '', //easy, less easy, Meh, Whoa, What?, That's cheap!
 	      gameState: 'loading', //player move, monsters move, loading, combat player, combat monster, inventory management
@@ -122,15 +122,17 @@
 	      //y 11
 	      var room = [[1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1]];
 	      //add walkable array for array
+	      console.log("in generateRoom");
 	      return room;
 	    }
 	  }, {
 	    key: 'runGame',
 	    value: function runGame() {
 	      console.log("click start game");
+	      var gr = this.generateRoom();
 	      this.setState({
 	        gameState: "startGame",
-	        roomArrayRender: generateRoom()
+	        roomArrayRender: gr
 	      });
 	    }
 	  }, {
@@ -139,7 +141,9 @@
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      if (this.state.gameState = 'loading') {
+	      var wdth = this.state.gameWidth;
+	      var hth = this.state.gameHeight;
+	      if (this.state.gameState === 'loading') {
 	        var toBeRendered = _react2.default.createElement(
 	          'div',
 	          { className: 'GameStartScreen vertCenterText' },
@@ -155,19 +159,21 @@
 	          )
 	        );
 	      }
-	      if (this.state.gameState = 'startGame') {
-
+	      if (this.state.gameState === 'startGame') {
+	        console.log('in startgame');
 	        var toBeRendered = _react2.default.createElement(
 	          'div',
 	          { className: 'GameScreen' },
 	          this.state.roomArrayRender.map(function (row, i) {
 	            var tile = row.map(function (tile, j) {
-	              return _react2.default.createElement('div', { styleName: { width: this.state.gameWidth / 13, height: this.state.gameHeight / 11 }, className: "tile" + tile });
+	              return _react2.default.createElement('div', { style: { width: wdth / 13 + "px", height: hth / 11 + "px" }, className: "tile" + tile });
 	            });
 	            return tile;
 	          })
 	        );
+	        console.log(toBeRendered);
 	      }
+
 	      /*
 	            if (this.state.gameState = 'gameStart') {
 	            let newRoomGeneration = generateRoom();

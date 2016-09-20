@@ -8,8 +8,8 @@ class GameBoard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            gameWidth: '800px',
-            gameHeight: '600px',
+            gameWidth: 800,
+            gameHeight: 600,
             gameLength: '', //Super Short, Short, Fun, Liking it, I have no life -- Seriously
             gameChallange: '', //easy, less easy, Meh, Whoa, What?, That's cheap!
             gameState: 'loading', //player move, monsters move, loading, combat player, combat monster, inventory management
@@ -53,14 +53,16 @@ class GameBoard extends React.Component {
         [1,1,1,1,1,1,2,1,1,1,1,1,1]
     ]
     //add walkable array for array
+    console.log("in generateRoom")
     return room;
   }
 
     runGame() {
       console.log("click start game")
+      let gr = this.generateRoom();
       this.setState({
         gameState: "startGame",
-        roomArrayRender: generateRoom()
+        roomArrayRender: gr
       })
     }
 
@@ -69,21 +71,26 @@ class GameBoard extends React.Component {
 
     }
 
+
     render() {
-      if (this.state.gameState = 'loading') {
+      var wdth = this.state.gameWidth;
+      var hth = this.state.gameHeight
+      if (this.state.gameState === 'loading') {
       var toBeRendered = (<div className="GameStartScreen vertCenterText"><br/><br/>Are you Ready To Begin?<br/><br/><button onClick={this.runGame.bind(this)}>Start</button></div>);
       }
-      if (this.state.gameState = 'startGame') {
-
+      if (this.state.gameState === 'startGame') {
+        console.log('in startgame')
       var toBeRendered = (<div className="GameScreen">{this.state.roomArrayRender.map(function(row, i){
         var tile = row.map(function(tile, j){
-        return (<div styleName={{width: this.state.gameWidth / 13, height: this.state.gameHeight / 11}} className={"tile" + tile}></div>)
+        return (<div style={{width: wdth / 13 + "px", height: hth / 11 + "px"}} className={"tile" + tile}></div>)
       })
       return tile;
       })
     }
       </div>)
+      console.log(toBeRendered)
       }
+
 /*
       if (this.state.gameState = 'gameStart') {
       let newRoomGeneration = generateRoom();

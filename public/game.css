@@ -17,6 +17,18 @@ body {
   margin: auto;
   text-align: center;
 }
+.tile1{
+  background-color: black;
+  float:left;
+}
+.tile2{
+  background-color: green;
+  float:left;
+}
+.tile0{
+  background-color: brown;
+  float:left;
+}
 .board{
   width:100%;
 position: relative;
