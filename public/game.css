@@ -29,6 +29,10 @@ body {
   background-color: brown;
   float:left;
 }
+.tileP{
+  background-color: pink;
+  float:left;
+}
 .board{
   width:100%;
 position: relative;

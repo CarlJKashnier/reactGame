@@ -19,7 +19,7 @@ class GameBoard extends React.Component {
             dungeonArray: [], //array for dungeon[[roomNumber, roomNumber, Null],[null, roomNumber, Null]]
             dungeonRoomArrayItems: [], //[{roomNumber: 1, monsters: [1,2,3], items: [1]}]
             items: [], //[item######, "Potion", "x","y"]
-            player: [], //HP, RoomNumber in, position in room, steps, position on map
+            player: [100,0,[6,5]], //HP, RoomNumber in, position in room X,Y, steps, position on map
             playerInventory: [], //[["itemname", qty]]
             roomArrayRender: []
         }
@@ -31,7 +31,65 @@ class GameBoard extends React.Component {
         */
         this.runGame = this.runGame.bind(this)
         this.generateRoom = this.generateRoom.bind(this)
+        this.handleKeyPress = this.handleKeyPress.bind(this);
     }
+    handleKeyPress(e) {
+      var PlayerPositionX = this.state.player[2][0];
+      var PlayerPostitionY = this.state.player[2][1];
+                //up 38
+            if (e.keyCode === 38) {
+                if (this.state.roomArrayRender[PlayerPostitionY - 1][PlayerPositionX] !== 3 && this.state.roomArrayRender[PlayerPostitionY - 1][PlayerPositionX] !== 1) {
+                    let tempArrForMove = this.state.player;
+                    tempArrForMove.splice(2, 1, [PlayerPositionX, PlayerPostitionY - 1])
+                    this.setState({
+                        player: tempArrForMove
+                    })
+
+                }
+            }
+      //down 40
+      if (e.keyCode === 40) {
+          if (this.state.roomArrayRender[PlayerPostitionY + 1][PlayerPositionX] !== 3 && this.state.roomArrayRender[PlayerPostitionY + 1][PlayerPositionX] !== 1) {
+              let tempArrForMove = this.state.player;
+              tempArrForMove.splice(2, 1, [PlayerPositionX, PlayerPostitionY + 1])
+              this.setState({
+                  player: tempArrForMove
+              })
+
+          }
+      }
+      //left 37
+      if (e.keyCode === 37) {
+          if (this.state.roomArrayRender[PlayerPostitionY ][PlayerPositionX -1] !== 3 && this.state.roomArrayRender[PlayerPostitionY][PlayerPositionX-1] !== 1) {
+              let tempArrForMove = this.state.player;
+              tempArrForMove.splice(2, 1, [PlayerPositionX - 1, PlayerPostitionY])
+              this.setState({
+                  player: tempArrForMove
+              })
+
+          }
+      }
+      //right 39
+      if (e.keyCode === 39) {
+          if (this.state.roomArrayRender[PlayerPostitionY ][PlayerPositionX +1] !== 3 && this.state.roomArrayRender[PlayerPostitionY][PlayerPositionX+1] !== 1) {
+              let tempArrForMove = this.state.player;
+              tempArrForMove.splice(2, 1, [PlayerPositionX + 1, PlayerPostitionY])
+              this.setState({
+                  player: tempArrForMove
+              })
+
+          }
+      }
+    }
+
+    componentDidMount() {
+      document.addEventListener('keydown', this.handleKeyPress);
+    }
+
+    componentWillUnmount() {
+      document.removeEventListener('keydown', this.handleKeyPress);
+    }
+
     generateRoom(){
       //0, nothing, walkable
       //1, room wall not walkable
@@ -53,12 +111,12 @@ class GameBoard extends React.Component {
         [1,1,1,1,1,1,2,1,1,1,1,1,1]
     ]
     //add walkable array for array
-    console.log("in generateRoom")
+
     return room;
   }
 
     runGame() {
-      console.log("click start game")
+
       let gr = this.generateRoom();
       this.setState({
         gameState: "startGame",
@@ -74,21 +132,28 @@ class GameBoard extends React.Component {
 
     render() {
       var wdth = this.state.gameWidth;
-      var hth = this.state.gameHeight
+      var hth = this.state.gameHeight;
+      var PlayerPositionX = this.state.player[2][0]
+      var PlayerPostitionY = this.state.player[2][1]
+      //This needs to be in module
       if (this.state.gameState === 'loading') {
       var toBeRendered = (<div className="GameStartScreen vertCenterText"><br/><br/>Are you Ready To Begin?<br/><br/><button onClick={this.runGame.bind(this)}>Start</button></div>);
       }
+      //This needs to be in module
       if (this.state.gameState === 'startGame') {
-        console.log('in startgame')
+
       var toBeRendered = (<div className="GameScreen">{this.state.roomArrayRender.map(function(row, i){
         var tile = row.map(function(tile, j){
+        if (j !== PlayerPositionX || i !== PlayerPostitionY) {
         return (<div style={{width: wdth / 13 + "px", height: hth / 11 + "px"}} className={"tile" + tile}></div>)
+      } else {
+return (<div style={{width: wdth / 13 + "px", height: hth / 11 + "px"}} className={"tileP"  }></div>)
+      }
       })
       return tile;
       })
     }
       </div>)
-      console.log(toBeRendered)
       }
 
 /*
@@ -98,7 +163,7 @@ class GameBoard extends React.Component {
       generateMonsters(newRoomGeneration);
       }
       */
-      console.log(toBeRendered)
+
         return (<div className="board">
         {toBeRendered}
         </div>
