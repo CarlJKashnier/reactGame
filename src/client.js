@@ -7,8 +7,9 @@ import ReactDOM from 'react-dom'
 class GameBoard extends React.Component {
     constructor(props) {
         super(props);
-
         this.state = {
+            gameWidth: '800px',
+            gameHeight: '600px',
             gameLength: '', //Super Short, Short, Fun, Liking it, I have no life -- Seriously
             gameChallange: '', //easy, less easy, Meh, Whoa, What?, That's cheap!
             gameState: 'loading', //player move, monsters move, loading, combat player, combat monster, inventory management
@@ -18,8 +19,9 @@ class GameBoard extends React.Component {
             dungeonArray: [], //array for dungeon[[roomNumber, roomNumber, Null],[null, roomNumber, Null]]
             dungeonRoomArrayItems: [], //[{roomNumber: 1, monsters: [1,2,3], items: [1]}]
             items: [], //[item######, "Potion", "x","y"]
-            player: [], //HP, RoomNumber in, position in room, steps
-            playerInventory: [] //[["itemname", qty]]
+            player: [], //HP, RoomNumber in, position in room, steps, position on map
+            playerInventory: [], //[["itemname", qty]]
+            roomArrayRender: []
         }
 /*
         this.randomBoard = this.randomBoard.bind(this);
@@ -28,27 +30,59 @@ class GameBoard extends React.Component {
         this.toggleCell = this.toggleCell.bind(this)
         */
         this.runGame = this.runGame.bind(this)
+        this.generateRoom = this.generateRoom.bind(this)
     }
-    randomBoard() {
-
-    }
+    generateRoom(){
+      //0, nothing, walkable
+      //1, room wall not walkable
+      //2, door, walkable
+      //3, Obsticle, not walkable
+      //x 13
+      //y 11
+      var room = [
+        [1,1,1,1,1,1,2,1,1,1,1,1,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,1],
+        [2,0,0,0,0,0,0,0,0,0,0,0,2],
+        [1,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,0,0,0,0,0,0,0,0,0,1],
+        [1,1,1,1,1,1,2,1,1,1,1,1,1]
+    ]
+    //add walkable array for array
+    return room;
+  }
 
     runGame() {
       console.log("click start game")
       this.setState({
-        gameState: "startGame"
+        gameState: "startGame",
+        roomArrayRender: generateRoom()
       })
     }
 
 
     componentWillMount() {
 
-
     }
 
     render() {
       if (this.state.gameState = 'loading') {
       var toBeRendered = (<div className="GameStartScreen vertCenterText"><br/><br/>Are you Ready To Begin?<br/><br/><button onClick={this.runGame.bind(this)}>Start</button></div>);
+      }
+      if (this.state.gameState = 'startGame') {
+
+      var toBeRendered = (<div className="GameScreen">{this.state.roomArrayRender.map(function(row, i){
+        var tile = row.map(function(tile, j){
+        return (<div styleName={{width: this.state.gameWidth / 13, height: this.state.gameHeight / 11}} className={"tile" + tile}></div>)
+      })
+      return tile;
+      })
+    }
+      </div>)
       }
 /*
       if (this.state.gameState = 'gameStart') {
@@ -57,6 +91,7 @@ class GameBoard extends React.Component {
       generateMonsters(newRoomGeneration);
       }
       */
+      console.log(toBeRendered)
         return (<div className="board">
         {toBeRendered}
         </div>

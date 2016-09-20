@@ -9,6 +9,14 @@ body {
   margin: auto;
   text-align: center;
 }
+.GameScreen{
+  width: 800px;
+  height: 600px;
+  background-color: black;
+  color:white;
+  margin: auto;
+  text-align: center;
+}
 .board{
   width:100%;
 position: relative;

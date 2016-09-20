@@ -77,84 +77,113 @@
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var GameBoard = function (_React$Component) {
-	    (0, _inherits3.default)(GameBoard, _React$Component);
+	  (0, _inherits3.default)(GameBoard, _React$Component);
 
-	    function GameBoard(props) {
-	        (0, _classCallCheck3.default)(this, GameBoard);
+	  function GameBoard(props) {
+	    (0, _classCallCheck3.default)(this, GameBoard);
 
-	        var _this = (0, _possibleConstructorReturn3.default)(this, (GameBoard.__proto__ || (0, _getPrototypeOf2.default)(GameBoard)).call(this, props));
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (GameBoard.__proto__ || (0, _getPrototypeOf2.default)(GameBoard)).call(this, props));
 
-	        _this.state = {
-	            gameLength: '', //Super Short, Short, Fun, Liking it, I have no life -- Seriously
-	            gameChallange: '', //easy, less easy, Meh, Whoa, What?, That's cheap!
-	            gameState: 'loading', //player move, monsters move, loading, combat player, combat monster, inventory management
-	            currentRoom: '', //####
-	            roomCounter: 1,
-	            monsters: [], //['monster#####', 'monsterName', 'type', 'level','x', 'y']
-	            dungeonArray: [], //array for dungeon[[roomNumber, roomNumber, Null],[null, roomNumber, Null]]
-	            dungeonRoomArrayItems: [], //[{roomNumber: 1, monsters: [1,2,3], items: [1]}]
-	            items: [], //[item######, "Potion", "x","y"]
-	            player: [], //HP, RoomNumber in, position in room, steps
-	            playerInventory: [] //[["itemname", qty]]
-	        };
-	        /*
-	                this.randomBoard = this.randomBoard.bind(this);
-	        
-	                this.clearGame = this.clearGame.bind(this)
-	                this.toggleCell = this.toggleCell.bind(this)
-	                */
-	        _this.runGame = _this.runGame.bind(_this);
-	        return _this;
+	    _this.state = {
+	      gameWidth: '800px',
+	      gameHeight: '600px',
+	      gameLength: '', //Super Short, Short, Fun, Liking it, I have no life -- Seriously
+	      gameChallange: '', //easy, less easy, Meh, Whoa, What?, That's cheap!
+	      gameState: 'loading', //player move, monsters move, loading, combat player, combat monster, inventory management
+	      currentRoom: '', //####
+	      roomCounter: 1,
+	      monsters: [], //['monster#####', 'monsterName', 'type', 'level','x', 'y']
+	      dungeonArray: [], //array for dungeon[[roomNumber, roomNumber, Null],[null, roomNumber, Null]]
+	      dungeonRoomArrayItems: [], //[{roomNumber: 1, monsters: [1,2,3], items: [1]}]
+	      items: [], //[item######, "Potion", "x","y"]
+	      player: [], //HP, RoomNumber in, position in room, steps, position on map
+	      playerInventory: [], //[["itemname", qty]]
+	      roomArrayRender: []
+	    };
+	    /*
+	            this.randomBoard = this.randomBoard.bind(this);
+	    
+	            this.clearGame = this.clearGame.bind(this)
+	            this.toggleCell = this.toggleCell.bind(this)
+	            */
+	    _this.runGame = _this.runGame.bind(_this);
+	    _this.generateRoom = _this.generateRoom.bind(_this);
+	    return _this;
+	  }
+
+	  (0, _createClass3.default)(GameBoard, [{
+	    key: 'generateRoom',
+	    value: function generateRoom() {
+	      //0, nothing, walkable
+	      //1, room wall not walkable
+	      //2, door, walkable
+	      //3, Obsticle, not walkable
+	      //x 13
+	      //y 11
+	      var room = [[1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1]];
+	      //add walkable array for array
+	      return room;
 	    }
+	  }, {
+	    key: 'runGame',
+	    value: function runGame() {
+	      console.log("click start game");
+	      this.setState({
+	        gameState: "startGame",
+	        roomArrayRender: generateRoom()
+	      });
+	    }
+	  }, {
+	    key: 'componentWillMount',
+	    value: function componentWillMount() {}
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      if (this.state.gameState = 'loading') {
+	        var toBeRendered = _react2.default.createElement(
+	          'div',
+	          { className: 'GameStartScreen vertCenterText' },
+	          _react2.default.createElement('br', null),
+	          _react2.default.createElement('br', null),
+	          'Are you Ready To Begin?',
+	          _react2.default.createElement('br', null),
+	          _react2.default.createElement('br', null),
+	          _react2.default.createElement(
+	            'button',
+	            { onClick: this.runGame.bind(this) },
+	            'Start'
+	          )
+	        );
+	      }
+	      if (this.state.gameState = 'startGame') {
 
-	    (0, _createClass3.default)(GameBoard, [{
-	        key: 'randomBoard',
-	        value: function randomBoard() {}
-	    }, {
-	        key: 'runGame',
-	        value: function runGame() {
-	            console.log("click start game");
-	            this.setState({
-	                gameState: "startGame"
+	        var toBeRendered = _react2.default.createElement(
+	          'div',
+	          { className: 'GameScreen' },
+	          this.state.roomArrayRender.map(function (row, i) {
+	            var tile = row.map(function (tile, j) {
+	              return _react2.default.createElement('div', { styleName: { width: this.state.gameWidth / 13, height: this.state.gameHeight / 11 }, className: "tile" + tile });
 	            });
-	        }
-	    }, {
-	        key: 'componentWillMount',
-	        value: function componentWillMount() {}
-	    }, {
-	        key: 'render',
-	        value: function render() {
-	            if (this.state.gameState = 'loading') {
-	                var toBeRendered = _react2.default.createElement(
-	                    'div',
-	                    { className: 'GameStartScreen vertCenterText' },
-	                    _react2.default.createElement('br', null),
-	                    _react2.default.createElement('br', null),
-	                    'Are you Ready To Begin?',
-	                    _react2.default.createElement('br', null),
-	                    _react2.default.createElement('br', null),
-	                    _react2.default.createElement(
-	                        'button',
-	                        { onClick: this.runGame.bind(this) },
-	                        'Start'
-	                    )
-	                );
+	            return tile;
+	          })
+	        );
+	      }
+	      /*
+	            if (this.state.gameState = 'gameStart') {
+	            let newRoomGeneration = generateRoom();
+	            generateItem(newRoomGeneration);
+	            generateMonsters(newRoomGeneration);
 	            }
-	            /*
-	                  if (this.state.gameState = 'gameStart') {
-	                  let newRoomGeneration = generateRoom();
-	                  generateItem(newRoomGeneration);
-	                  generateMonsters(newRoomGeneration);
-	                  }
-	                  */
-	            return _react2.default.createElement(
-	                'div',
-	                { className: 'board' },
-	                toBeRendered
-	            );
-	        }
-	    }]);
-	    return GameBoard;
+	            */
+	      console.log(toBeRendered);
+	      return _react2.default.createElement(
+	        'div',
+	        { className: 'board' },
+	        toBeRendered
+	      );
+	    }
+	  }]);
+	  return GameBoard;
 	}(_react2.default.Component);
 
 	_reactDom2.default.render(_react2.default.createElement(GameBoard, null), document.getElementById('game'));
