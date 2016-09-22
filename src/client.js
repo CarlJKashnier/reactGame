@@ -1,5 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+var playerMovement = require('./PlayerMovement')
+
 
 
 
@@ -13,11 +15,10 @@ class GameBoard extends React.Component {
             gameLength: '', //Super Short, Short, Fun, Liking it, I have no life -- Seriously
             gameChallange: '', //easy, less easy, Meh, Whoa, What?, That's cheap!
             gameState: 'loading', //player move, monsters move, loading, combat player, combat monster, inventory management
-            currentRoom: '', //####
+            currentRoom: '', //RoomID####, ExitTop (bool), ExitBottom, ExitLeft, ExitRight
             roomCounter: 1,
-            monsters: [], //['monster#####', 'monsterName', 'type', 'level','x', 'y']
+            monsters: [], //['monster#####', 'monsterName', 'type', 'level','x', 'y', RoomID]
             dungeonArray: [], //array for dungeon[[roomNumber, roomNumber, Null],[null, roomNumber, Null]]
-            dungeonRoomArrayItems: [], //[{roomNumber: 1, monsters: [1,2,3], items: [1]}]
             items: [], //[item######, "Potion", "x","y"]
             player: [100,0,[6,5]], //HP, RoomNumber in, position in room X,Y, steps, position on map
             playerInventory: [], //[["itemname", qty]]
@@ -33,53 +34,17 @@ class GameBoard extends React.Component {
         this.generateRoom = this.generateRoom.bind(this)
         this.handleKeyPress = this.handleKeyPress.bind(this);
     }
+
     handleKeyPress(e) {
       var PlayerPositionX = this.state.player[2][0];
-      var PlayerPostitionY = this.state.player[2][1];
-                //up 38
-            if (e.keyCode === 38) {
-                if (this.state.roomArrayRender[PlayerPostitionY - 1][PlayerPositionX] !== 3 && this.state.roomArrayRender[PlayerPostitionY - 1][PlayerPositionX] !== 1) {
-                    let tempArrForMove = this.state.player;
-                    tempArrForMove.splice(2, 1, [PlayerPositionX, PlayerPostitionY - 1])
-                    this.setState({
-                        player: tempArrForMove
-                    })
-
-                }
-            }
-      //down 40
-      if (e.keyCode === 40) {
-          if (this.state.roomArrayRender[PlayerPostitionY + 1][PlayerPositionX] !== 3 && this.state.roomArrayRender[PlayerPostitionY + 1][PlayerPositionX] !== 1) {
-              let tempArrForMove = this.state.player;
-              tempArrForMove.splice(2, 1, [PlayerPositionX, PlayerPostitionY + 1])
-              this.setState({
-                  player: tempArrForMove
-              })
-
-          }
-      }
-      //left 37
-      if (e.keyCode === 37) {
-          if (this.state.roomArrayRender[PlayerPostitionY ][PlayerPositionX -1] !== 3 && this.state.roomArrayRender[PlayerPostitionY][PlayerPositionX-1] !== 1 && PlayerPositionX-1 > -1) {
-              let tempArrForMove = this.state.player;
-              tempArrForMove.splice(2, 1, [PlayerPositionX - 1, PlayerPostitionY])
-              this.setState({
-                  player: tempArrForMove
-              })
-
-          }
-      }
-      //right 39
-      if (e.keyCode === 39) {
-          if (this.state.roomArrayRender[PlayerPostitionY ][PlayerPositionX +1] !== 3 && this.state.roomArrayRender[PlayerPostitionY][PlayerPositionX+1] !== 1 && this.state.roomArrayRender[PlayerPostitionY].length > PlayerPositionX+1 ) {
-              let tempArrForMove = this.state.player;
-              tempArrForMove.splice(2, 1, [PlayerPositionX + 1, PlayerPostitionY])
-              this.setState({
-                  player: tempArrForMove
-              })
-
-          }
-      }
+      var PlayerPositionY = this.state.player[2][1];
+      var player = this.state.player;
+      var roomToMoveIn =   this.state.roomArrayRender;
+      var keyCode = e.keyCode;
+      var move = playerMovement.playerMove(PlayerPositionX, PlayerPositionY, player, roomToMoveIn, keyCode)        //up 38
+      this.setState({
+          player: move
+      })
     }
 
     componentDidMount() {
@@ -134,7 +99,9 @@ class GameBoard extends React.Component {
       var wdth = this.state.gameWidth;
       var hth = this.state.gameHeight;
       var PlayerPositionX = this.state.player[2][0]
-      var PlayerPostitionY = this.state.player[2][1]
+      var PlayerPositionY = this.state.player[2][1]
+      //var roomToRender = this.state.roomArrayRender
+      //var monstersToRender = this.state.
       //This needs to be in module
       if (this.state.gameState === 'loading') {
       var toBeRendered = (<div className="GameStartScreen vertCenterText"><br/><br/>Are you Ready To Begin?<br/><br/><button onClick={this.runGame.bind(this)}>Start</button></div>);
@@ -144,7 +111,7 @@ class GameBoard extends React.Component {
 
       var toBeRendered = (<div className="GameScreen">{this.state.roomArrayRender.map(function(row, i){
         var tile = row.map(function(tile, j){
-        if (j !== PlayerPositionX || i !== PlayerPostitionY) {
+        if (j !== PlayerPositionX || i !== PlayerPositionY) {
         return (<div style={{width: wdth / 13 + "px", height: hth / 11 + "px"}} className={"tile" + tile}></div>)
       } else {
 return (<div style={{width: wdth / 13 + "px", height: hth / 11 + "px"}} className={"tileP"  }></div>)

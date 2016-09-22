@@ -76,184 +76,154 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	var playerMovement = __webpack_require__(258);
+
 	var GameBoard = function (_React$Component) {
-	    (0, _inherits3.default)(GameBoard, _React$Component);
+	  (0, _inherits3.default)(GameBoard, _React$Component);
 
-	    function GameBoard(props) {
-	        (0, _classCallCheck3.default)(this, GameBoard);
+	  function GameBoard(props) {
+	    (0, _classCallCheck3.default)(this, GameBoard);
 
-	        var _this = (0, _possibleConstructorReturn3.default)(this, (GameBoard.__proto__ || (0, _getPrototypeOf2.default)(GameBoard)).call(this, props));
+	    var _this = (0, _possibleConstructorReturn3.default)(this, (GameBoard.__proto__ || (0, _getPrototypeOf2.default)(GameBoard)).call(this, props));
 
-	        _this.state = {
-	            gameWidth: 800,
-	            gameHeight: 600,
-	            gameLength: '', //Super Short, Short, Fun, Liking it, I have no life -- Seriously
-	            gameChallange: '', //easy, less easy, Meh, Whoa, What?, That's cheap!
-	            gameState: 'loading', //player move, monsters move, loading, combat player, combat monster, inventory management
-	            currentRoom: '', //####
-	            roomCounter: 1,
-	            monsters: [], //['monster#####', 'monsterName', 'type', 'level','x', 'y']
-	            dungeonArray: [], //array for dungeon[[roomNumber, roomNumber, Null],[null, roomNumber, Null]]
-	            dungeonRoomArrayItems: [], //[{roomNumber: 1, monsters: [1,2,3], items: [1]}]
-	            items: [], //[item######, "Potion", "x","y"]
-	            player: [100, 0, [6, 5]], //HP, RoomNumber in, position in room X,Y, steps, position on map
-	            playerInventory: [], //[["itemname", qty]]
-	            roomArrayRender: []
-	        };
-	        /*
-	                this.randomBoard = this.randomBoard.bind(this);
-	        
-	                this.clearGame = this.clearGame.bind(this)
-	                this.toggleCell = this.toggleCell.bind(this)
-	                */
-	        _this.runGame = _this.runGame.bind(_this);
-	        _this.generateRoom = _this.generateRoom.bind(_this);
-	        _this.handleKeyPress = _this.handleKeyPress.bind(_this);
-	        return _this;
+	    _this.state = {
+	      gameWidth: 800,
+	      gameHeight: 600,
+	      gameLength: '', //Super Short, Short, Fun, Liking it, I have no life -- Seriously
+	      gameChallange: '', //easy, less easy, Meh, Whoa, What?, That's cheap!
+	      gameState: 'loading', //player move, monsters move, loading, combat player, combat monster, inventory management
+	      currentRoom: '', //RoomID####, ExitTop (bool), ExitBottom, ExitLeft, ExitRight
+	      roomCounter: 1,
+	      monsters: [], //['monster#####', 'monsterName', 'type', 'level','x', 'y', RoomID]
+	      dungeonArray: [], //array for dungeon[[roomNumber, roomNumber, Null],[null, roomNumber, Null]]
+	      items: [], //[item######, "Potion", "x","y"]
+	      player: [100, 0, [6, 5]], //HP, RoomNumber in, position in room X,Y, steps, position on map
+	      playerInventory: [], //[["itemname", qty]]
+	      roomArrayRender: []
+	    };
+	    /*
+	            this.randomBoard = this.randomBoard.bind(this);
+	    
+	            this.clearGame = this.clearGame.bind(this)
+	            this.toggleCell = this.toggleCell.bind(this)
+	            */
+	    _this.runGame = _this.runGame.bind(_this);
+	    _this.generateRoom = _this.generateRoom.bind(_this);
+	    _this.handleKeyPress = _this.handleKeyPress.bind(_this);
+	    return _this;
+	  }
+
+	  (0, _createClass3.default)(GameBoard, [{
+	    key: 'handleKeyPress',
+	    value: function handleKeyPress(e) {
+	      var PlayerPositionX = this.state.player[2][0];
+	      var PlayerPositionY = this.state.player[2][1];
+	      var player = this.state.player;
+	      var roomToMoveIn = this.state.roomArrayRender;
+	      var keyCode = e.keyCode;
+	      var move = playerMovement.playerMove(PlayerPositionX, PlayerPositionY, player, roomToMoveIn, keyCode); //up 38
+	      this.setState({
+	        player: move
+	      });
 	    }
+	  }, {
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      document.addEventListener('keydown', this.handleKeyPress);
+	    }
+	  }, {
+	    key: 'componentWillUnmount',
+	    value: function componentWillUnmount() {
+	      document.removeEventListener('keydown', this.handleKeyPress);
+	    }
+	  }, {
+	    key: 'generateRoom',
+	    value: function generateRoom() {
+	      //0, nothing, walkable
+	      //1, room wall not walkable
+	      //2, door, walkable
+	      //3, Obsticle, not walkable
+	      //x 13
+	      //y 11
+	      var room = [[1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1]];
+	      //add walkable array for array
 
-	    (0, _createClass3.default)(GameBoard, [{
-	        key: 'handleKeyPress',
-	        value: function handleKeyPress(e) {
-	            var PlayerPositionX = this.state.player[2][0];
-	            var PlayerPostitionY = this.state.player[2][1];
-	            //up 38
-	            if (e.keyCode === 38) {
-	                if (this.state.roomArrayRender[PlayerPostitionY - 1][PlayerPositionX] !== 3 && this.state.roomArrayRender[PlayerPostitionY - 1][PlayerPositionX] !== 1) {
-	                    var tempArrForMove = this.state.player;
-	                    tempArrForMove.splice(2, 1, [PlayerPositionX, PlayerPostitionY - 1]);
-	                    this.setState({
-	                        player: tempArrForMove
-	                    });
-	                }
-	            }
-	            //down 40
-	            if (e.keyCode === 40) {
-	                if (this.state.roomArrayRender[PlayerPostitionY + 1][PlayerPositionX] !== 3 && this.state.roomArrayRender[PlayerPostitionY + 1][PlayerPositionX] !== 1) {
-	                    var _tempArrForMove = this.state.player;
-	                    _tempArrForMove.splice(2, 1, [PlayerPositionX, PlayerPostitionY + 1]);
-	                    this.setState({
-	                        player: _tempArrForMove
-	                    });
-	                }
-	            }
-	            //left 37
-	            if (e.keyCode === 37) {
-	                if (this.state.roomArrayRender[PlayerPostitionY][PlayerPositionX - 1] !== 3 && this.state.roomArrayRender[PlayerPostitionY][PlayerPositionX - 1] !== 1 && PlayerPositionX - 1 > -1) {
-	                    var _tempArrForMove2 = this.state.player;
-	                    _tempArrForMove2.splice(2, 1, [PlayerPositionX - 1, PlayerPostitionY]);
-	                    this.setState({
-	                        player: _tempArrForMove2
-	                    });
-	                }
-	            }
-	            //right 39
-	            if (e.keyCode === 39) {
-	                if (this.state.roomArrayRender[PlayerPostitionY][PlayerPositionX + 1] !== 3 && this.state.roomArrayRender[PlayerPostitionY][PlayerPositionX + 1] !== 1 && this.state.roomArrayRender[PlayerPostitionY].length > PlayerPositionX + 1) {
-	                    var _tempArrForMove3 = this.state.player;
-	                    _tempArrForMove3.splice(2, 1, [PlayerPositionX + 1, PlayerPostitionY]);
-	                    this.setState({
-	                        player: _tempArrForMove3
-	                    });
-	                }
-	            }
-	        }
-	    }, {
-	        key: 'componentDidMount',
-	        value: function componentDidMount() {
-	            document.addEventListener('keydown', this.handleKeyPress);
-	        }
-	    }, {
-	        key: 'componentWillUnmount',
-	        value: function componentWillUnmount() {
-	            document.removeEventListener('keydown', this.handleKeyPress);
-	        }
-	    }, {
-	        key: 'generateRoom',
-	        value: function generateRoom() {
-	            //0, nothing, walkable
-	            //1, room wall not walkable
-	            //2, door, walkable
-	            //3, Obsticle, not walkable
-	            //x 13
-	            //y 11
-	            var room = [[1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1]];
-	            //add walkable array for array
+	      return room;
+	    }
+	  }, {
+	    key: 'runGame',
+	    value: function runGame() {
 
-	            return room;
-	        }
-	    }, {
-	        key: 'runGame',
-	        value: function runGame() {
+	      var gr = this.generateRoom();
+	      this.setState({
+	        gameState: "startGame",
+	        roomArrayRender: gr
+	      });
+	    }
+	  }, {
+	    key: 'componentWillMount',
+	    value: function componentWillMount() {}
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var wdth = this.state.gameWidth;
+	      var hth = this.state.gameHeight;
+	      var PlayerPositionX = this.state.player[2][0];
+	      var PlayerPositionY = this.state.player[2][1];
+	      //var roomToRender = this.state.roomArrayRender
+	      //var monstersToRender = this.state.
+	      //This needs to be in module
+	      if (this.state.gameState === 'loading') {
+	        var toBeRendered = _react2.default.createElement(
+	          'div',
+	          { className: 'GameStartScreen vertCenterText' },
+	          _react2.default.createElement('br', null),
+	          _react2.default.createElement('br', null),
+	          'Are you Ready To Begin?',
+	          _react2.default.createElement('br', null),
+	          _react2.default.createElement('br', null),
+	          _react2.default.createElement(
+	            'button',
+	            { onClick: this.runGame.bind(this) },
+	            'Start'
+	          )
+	        );
+	      }
+	      //This needs to be in module
+	      if (this.state.gameState === 'startGame') {
 
-	            var gr = this.generateRoom();
-	            this.setState({
-	                gameState: "startGame",
-	                roomArrayRender: gr
+	        var toBeRendered = _react2.default.createElement(
+	          'div',
+	          { className: 'GameScreen' },
+	          this.state.roomArrayRender.map(function (row, i) {
+	            var tile = row.map(function (tile, j) {
+	              if (j !== PlayerPositionX || i !== PlayerPositionY) {
+	                return _react2.default.createElement('div', { style: { width: wdth / 13 + "px", height: hth / 11 + "px" }, className: "tile" + tile });
+	              } else {
+	                return _react2.default.createElement('div', { style: { width: wdth / 13 + "px", height: hth / 11 + "px" }, className: "tileP" });
+	              }
 	            });
-	        }
-	    }, {
-	        key: 'componentWillMount',
-	        value: function componentWillMount() {}
-	    }, {
-	        key: 'render',
-	        value: function render() {
-	            var wdth = this.state.gameWidth;
-	            var hth = this.state.gameHeight;
-	            var PlayerPositionX = this.state.player[2][0];
-	            var PlayerPostitionY = this.state.player[2][1];
-	            //This needs to be in module
-	            if (this.state.gameState === 'loading') {
-	                var toBeRendered = _react2.default.createElement(
-	                    'div',
-	                    { className: 'GameStartScreen vertCenterText' },
-	                    _react2.default.createElement('br', null),
-	                    _react2.default.createElement('br', null),
-	                    'Are you Ready To Begin?',
-	                    _react2.default.createElement('br', null),
-	                    _react2.default.createElement('br', null),
-	                    _react2.default.createElement(
-	                        'button',
-	                        { onClick: this.runGame.bind(this) },
-	                        'Start'
-	                    )
-	                );
+	            return tile;
+	          })
+	        );
+	      }
+
+	      /*
+	            if (this.state.gameState = 'gameStart') {
+	            let newRoomGeneration = generateRoom();
+	            generateItem(newRoomGeneration);
+	            generateMonsters(newRoomGeneration);
 	            }
-	            //This needs to be in module
-	            if (this.state.gameState === 'startGame') {
+	            */
 
-	                var toBeRendered = _react2.default.createElement(
-	                    'div',
-	                    { className: 'GameScreen' },
-	                    this.state.roomArrayRender.map(function (row, i) {
-	                        var tile = row.map(function (tile, j) {
-	                            if (j !== PlayerPositionX || i !== PlayerPostitionY) {
-	                                return _react2.default.createElement('div', { style: { width: wdth / 13 + "px", height: hth / 11 + "px" }, className: "tile" + tile });
-	                            } else {
-	                                return _react2.default.createElement('div', { style: { width: wdth / 13 + "px", height: hth / 11 + "px" }, className: "tileP" });
-	                            }
-	                        });
-	                        return tile;
-	                    })
-	                );
-	            }
-
-	            /*
-	                  if (this.state.gameState = 'gameStart') {
-	                  let newRoomGeneration = generateRoom();
-	                  generateItem(newRoomGeneration);
-	                  generateMonsters(newRoomGeneration);
-	                  }
-	                  */
-
-	            return _react2.default.createElement(
-	                'div',
-	                { className: 'board' },
-	                toBeRendered
-	            );
-	        }
-	    }]);
-	    return GameBoard;
+	      return _react2.default.createElement(
+	        'div',
+	        { className: 'board' },
+	        toBeRendered
+	      );
+	    }
+	  }]);
+	  return GameBoard;
 	}(_react2.default.Component);
 
 	_reactDom2.default.render(_react2.default.createElement(GameBoard, null), document.getElementById('game'));
@@ -23158,6 +23128,50 @@
 
 	module.exports = ReactDOMNullInputValuePropHook;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(89)))
+
+/***/ },
+/* 258 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	module.exports = {
+	  playerMove: function playerMove(PlayerPositionX, PlayerPositionY, player, roomToMoveIn, keyCode) {
+	    switch (keyCode) {
+	      case 38:
+	        //up
+	        if (roomToMoveIn[PlayerPositionY - 1][PlayerPositionX] !== 3 && roomToMoveIn[PlayerPositionY - 1][PlayerPositionX] !== 1) {
+	          player.splice(2, 1, [PlayerPositionX, PlayerPositionY - 1]);
+	          return player;
+	        }
+	        return player;
+	      case 40:
+	        //down
+	        if (roomToMoveIn[PlayerPositionY + 1][PlayerPositionX] !== 3 && roomToMoveIn[PlayerPositionY + 1][PlayerPositionX] !== 1) {
+	          player.splice(2, 1, [PlayerPositionX, PlayerPositionY + 1]);
+	          return player;
+	        }
+	        return player;
+	      case 37:
+	        //left
+	        if (roomToMoveIn[PlayerPositionY][PlayerPositionX - 1] !== 3 && roomToMoveIn[PlayerPositionY][PlayerPositionX - 1] !== 1 && PlayerPositionX > 0) {
+	          player.splice(2, 1, [PlayerPositionX - 1, PlayerPositionY]);
+	          return player;
+	        }
+	        return player;
+	      case 39:
+	        //right
+	        if (roomToMoveIn[PlayerPositionY][PlayerPositionX + 1] !== 3 && roomToMoveIn[PlayerPositionY][PlayerPositionX + 1] !== 1 && roomToMoveIn[PlayerPositionY].length > PlayerPositionX + 1) {
+	          player.splice(2, 1, [PlayerPositionX + 1, PlayerPositionY]);
+	          return player;
+	        }
+	        return player;
+	      default:
+	        console.log("return default");
+	        return player;
+	    }
+	  }
+	};
 
 /***/ }
 /******/ ]);
