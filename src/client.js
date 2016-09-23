@@ -18,7 +18,8 @@ class GameBoard extends React.Component {
             items: [], //[item######, "Potion", "x","y"]
             player: [100,0,[6,5],1,0,10], //HP, RoomNumber in, position in room X,Y, Level, XP, attack
             playerInventory: [], //[["itemname", qty]]
-            roomArrayRender: []
+            roomArrayRender: [],
+            fog: false
         }
         this.runGame = this.runGame.bind(this)
         this.generateRoom = this.generateRoom.bind(this)
@@ -71,7 +72,7 @@ class GameBoard extends React.Component {
   generateItem(roomNumber){
     var LootX = Math.floor(Math.random() * (10 - 3)) + 3;
     var LootY = Math.floor(Math.random() * (8 - 3)) + 3;
-    var Loot = Math.floor(Math.random() * (3 - 1)) + 1;
+    var Loot = Math.floor(Math.random() * (5 - 1)) + 1;
 
       switch(Loot){
         case 1:
@@ -81,6 +82,9 @@ class GameBoard extends React.Component {
         Loot =  "Att";
         break;
         case 3:
+        Loot =  "Trap";
+        break;
+        case 4:
         Loot = "Nothing";
       }
       if (Loot === "Nothing"){
@@ -127,6 +131,7 @@ class GameBoard extends React.Component {
       var monsterY = 0;
       var itemX = 0;
       var itemY = 0;
+      var fog = this.state.fog;
 
       if (this.state.gameState === 'loading') {
       var toBeRendered = (<div className="GameStartScreen vertCenterText"><br/><br/>Are you Ready To Begin?<br/><br/><button onClick={this.runGame.bind(this)}>Start</button></div>);
@@ -151,13 +156,20 @@ class GameBoard extends React.Component {
         if (j === PlayerPositionX && i === PlayerPositionY) {
         return (<div style={{width: wdth / 13 + "px", height: hth / 11 + "px"}} className={"tileP"  }></div>)
       }
-      if (j === monsterX && i === monsterY) {
-      return (<div style={{width: wdth / 13 + "px", height: hth / 11 + "px"}} className={"tileM"  }></div>)
-    }
-    if (j === itemX && i === itemY) {
-    return (<div style={{width: wdth / 13 + "px", height: hth / 11 + "px"}} className={"tileI"  }></div>)
-  }
-return (<div style={{width: wdth / 13 + "px", height: hth / 11 + "px"}} className={"tile" + tile}></div>)
+
+
+  //fog needs work
+  if ((i >= PlayerPositionY+3||i <= PlayerPositionY-3||j >= PlayerPositionX+3 ||j <= PlayerPositionX-3)&&fog === true){
+return (<div style={{width: wdth / 13 + "px", height: hth / 11 + "px"}} className={"tile1"}></div>)
+} else {
+  if (j === monsterX && i === monsterY) {
+  return (<div style={{width: wdth / 13 + "px", height: hth / 11 + "px"}} className={"tileM"  }></div>)
+}
+if (j === itemX && i === itemY) {
+return (<div style={{width: wdth / 13 + "px", height: hth / 11 + "px"}} className={"tileI"  }></div>)
+}
+  return (<div style={{width: wdth / 13 + "px", height: hth / 11 + "px"}} className={"tile" + tile}></div>)
+}
 
       })
       return tile;

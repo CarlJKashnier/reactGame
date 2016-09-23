@@ -26,7 +26,6 @@ module.exports = {
     }
     return player;
     default:
-    console.log("return default")
       return player;
     }
   }

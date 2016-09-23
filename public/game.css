@@ -38,6 +38,10 @@ body {
   float:left;
 }
 .tileM{
+  background-color: red;
+  float:left;
+}
+.tileB{
   background-color: purple;
   float:left;
 }

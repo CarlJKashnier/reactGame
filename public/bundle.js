@@ -98,7 +98,8 @@
 	      items: [], //[item######, "Potion", "x","y"]
 	      player: [100, 0, [6, 5], 1, 0, 10], //HP, RoomNumber in, position in room X,Y, Level, XP, attack
 	      playerInventory: [], //[["itemname", qty]]
-	      roomArrayRender: []
+	      roomArrayRender: [],
+	      fog: false
 	    };
 	    _this.runGame = _this.runGame.bind(_this);
 	    _this.generateRoom = _this.generateRoom.bind(_this);
@@ -150,7 +151,7 @@
 	    value: function generateItem(roomNumber) {
 	      var LootX = Math.floor(Math.random() * (10 - 3)) + 3;
 	      var LootY = Math.floor(Math.random() * (8 - 3)) + 3;
-	      var Loot = Math.floor(Math.random() * (3 - 1)) + 1;
+	      var Loot = Math.floor(Math.random() * (5 - 1)) + 1;
 
 	      switch (Loot) {
 	        case 1:
@@ -160,6 +161,9 @@
 	          Loot = "Att";
 	          break;
 	        case 3:
+	          Loot = "Trap";
+	          break;
+	        case 4:
 	          Loot = "Nothing";
 	      }
 	      if (Loot === "Nothing") {
@@ -206,6 +210,7 @@
 	      var monsterY = 0;
 	      var itemX = 0;
 	      var itemY = 0;
+	      var fog = this.state.fog;
 
 	      if (this.state.gameState === 'loading') {
 	        var toBeRendered = _react2.default.createElement(
@@ -246,13 +251,19 @@
 	              if (j === PlayerPositionX && i === PlayerPositionY) {
 	                return _react2.default.createElement('div', { style: { width: wdth / 13 + "px", height: hth / 11 + "px" }, className: "tileP" });
 	              }
-	              if (j === monsterX && i === monsterY) {
-	                return _react2.default.createElement('div', { style: { width: wdth / 13 + "px", height: hth / 11 + "px" }, className: "tileM" });
+
+	              //fog needs work
+	              if ((i >= PlayerPositionY + 3 || i <= PlayerPositionY - 3 || j >= PlayerPositionX + 3 || j <= PlayerPositionX - 3) && fog === true) {
+	                return _react2.default.createElement('div', { style: { width: wdth / 13 + "px", height: hth / 11 + "px" }, className: "tile1" });
+	              } else {
+	                if (j === monsterX && i === monsterY) {
+	                  return _react2.default.createElement('div', { style: { width: wdth / 13 + "px", height: hth / 11 + "px" }, className: "tileM" });
+	                }
+	                if (j === itemX && i === itemY) {
+	                  return _react2.default.createElement('div', { style: { width: wdth / 13 + "px", height: hth / 11 + "px" }, className: "tileI" });
+	                }
+	                return _react2.default.createElement('div', { style: { width: wdth / 13 + "px", height: hth / 11 + "px" }, className: "tile" + tile });
 	              }
-	              if (j === itemX && i === itemY) {
-	                return _react2.default.createElement('div', { style: { width: wdth / 13 + "px", height: hth / 11 + "px" }, className: "tileI" });
-	              }
-	              return _react2.default.createElement('div', { style: { width: wdth / 13 + "px", height: hth / 11 + "px" }, className: "tile" + tile });
 	            });
 	            return tile;
 	          })
@@ -23210,7 +23221,6 @@
 	        }
 	        return player;
 	      default:
-	        console.log("return default");
 	        return player;
 	    }
 	  }
