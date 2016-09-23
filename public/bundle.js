@@ -89,27 +89,22 @@
 	    _this.state = {
 	      gameWidth: 800,
 	      gameHeight: 600,
-	      gameLength: '', //Super Short, Short, Fun, Liking it, I have no life -- Seriously
-	      gameChallange: '', //easy, less easy, Meh, Whoa, What?, That's cheap!
 	      gameState: 'loading', //player move, monsters move, loading, combat player, combat monster, inventory management
 	      currentRoom: '', //RoomID####, ExitTop (bool), ExitBottom, ExitLeft, ExitRight
 	      roomCounter: 1,
-	      monsters: [], //['monster#####', 'monsterName', 'type', 'level','x', 'y', RoomID]
+	      monsters: [], //[Room, 'x', 'y', HP]
 	      dungeonArray: [], //array for dungeon[[roomNumber, roomNumber, Null],[null, roomNumber, Null]]
+	      rooms: [], // [Room#, RoomArray]
 	      items: [], //[item######, "Potion", "x","y"]
-	      player: [100, 0, [6, 5]], //HP, RoomNumber in, position in room X,Y, steps, position on map
+	      player: [100, 0, [6, 5], 1, 0, 10], //HP, RoomNumber in, position in room X,Y, Level, XP, attack
 	      playerInventory: [], //[["itemname", qty]]
 	      roomArrayRender: []
 	    };
-	    /*
-	            this.randomBoard = this.randomBoard.bind(this);
-	    
-	            this.clearGame = this.clearGame.bind(this)
-	            this.toggleCell = this.toggleCell.bind(this)
-	            */
 	    _this.runGame = _this.runGame.bind(_this);
 	    _this.generateRoom = _this.generateRoom.bind(_this);
 	    _this.handleKeyPress = _this.handleKeyPress.bind(_this);
+	    _this.generateMonster = _this.generateMonster.bind(_this);
+	    _this.generateItem = _this.generateItem.bind(_this);
 	    return _this;
 	  }
 
@@ -121,7 +116,7 @@
 	      var player = this.state.player;
 	      var roomToMoveIn = this.state.roomArrayRender;
 	      var keyCode = e.keyCode;
-	      var move = playerMovement.playerMove(PlayerPositionX, PlayerPositionY, player, roomToMoveIn, keyCode); //up 38
+	      var move = playerMovement.playerMove(PlayerPositionX, PlayerPositionY, player, roomToMoveIn, keyCode);
 	      this.setState({
 	        player: move
 	      });
@@ -139,25 +134,59 @@
 	  }, {
 	    key: 'generateRoom',
 	    value: function generateRoom() {
-	      //0, nothing, walkable
-	      //1, room wall not walkable
-	      //2, door, walkable
-	      //3, Obsticle, not walkable
-	      //x 13
-	      //y 11
 	      var room = [[1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1]];
-	      //add walkable array for array
-
 	      return room;
+	    }
+	  }, {
+	    key: 'generateMonster',
+	    value: function generateMonster(roomNumber) {
+	      var monsterX = Math.floor(Math.random() * (10 - 3)) + 3;
+	      var monsterY = Math.floor(Math.random() * (8 - 3)) + 3;
+	      var monsterHP = Math.floor(Math.random() * (50 - 20)) + 20;
+	      return [roomNumber, monsterX, monsterY, monsterHP];
+	    }
+	  }, {
+	    key: 'generateItem',
+	    value: function generateItem(roomNumber) {
+	      var LootX = Math.floor(Math.random() * (10 - 3)) + 3;
+	      var LootY = Math.floor(Math.random() * (8 - 3)) + 3;
+	      var Loot = Math.floor(Math.random() * (3 - 1)) + 1;
+
+	      switch (Loot) {
+	        case 1:
+	          Loot = "HP";
+	          break;
+	        case 2:
+	          Loot = "Att";
+	          break;
+	        case 3:
+	          Loot = "Nothing";
+	      }
+	      if (Loot === "Nothing") {
+	        return [-1, -1, "", roomNumber];
+	      } else {
+	        return [LootX, LootY, Loot, roomNumber];
+	      }
 	    }
 	  }, {
 	    key: 'runGame',
 	    value: function runGame() {
 
-	      var gr = this.generateRoom();
+	      var gr = this.generateRoom(0);
+	      var mr = this.generateMonster(0);
+	      var ite = this.generateItem(0);
+	      var tempMonsterArray = this.state.monsters;
+	      tempMonsterArray.push(mr);
+	      var tempRoomArray = this.state.rooms;
+	      tempRoomArray.push([0, gr]);
+	      var tempItemArray = this.state.items;
+	      tempItemArray.push(ite);
 	      this.setState({
 	        gameState: "startGame",
-	        roomArrayRender: gr
+	        roomArrayRender: gr,
+	        monsters: tempMonsterArray,
+	        rooms: tempRoomArray,
+	        items: tempItemArray
 	      });
 	    }
 	  }, {
@@ -170,9 +199,14 @@
 	      var hth = this.state.gameHeight;
 	      var PlayerPositionX = this.state.player[2][0];
 	      var PlayerPositionY = this.state.player[2][1];
-	      //var roomToRender = this.state.roomArrayRender
-	      //var monstersToRender = this.state.
-	      //This needs to be in module
+	      var monsters = this.state.monsters;
+	      var items = this.state.items;
+	      var currentRoom = this.state.player[1];
+	      var monsterX = 0;
+	      var monsterY = 0;
+	      var itemX = 0;
+	      var itemY = 0;
+
 	      if (this.state.gameState === 'loading') {
 	        var toBeRendered = _react2.default.createElement(
 	          'div',
@@ -189,32 +223,41 @@
 	          )
 	        );
 	      }
-	      //This needs to be in module
-	      if (this.state.gameState === 'startGame') {
 
+	      if (this.state.gameState === 'startGame') {
+	        //Figure out monster
+	        for (var i = 0; i < items.length; i++) {
+	          if (items[i][3] === currentRoom) {
+	            itemX = items[i][0];
+	            itemY = items[i][1];
+	          }
+	        }
+	        for (var i = 0; i < monsters.length; i++) {
+	          if (monsters[i][0] === currentRoom && monsters[i][3] > 0) {
+	            monsterX = monsters[i][1];
+	            monsterY = monsters[i][2];
+	          }
+	        }
 	        var toBeRendered = _react2.default.createElement(
 	          'div',
 	          { className: 'GameScreen' },
 	          this.state.roomArrayRender.map(function (row, i) {
 	            var tile = row.map(function (tile, j) {
-	              if (j !== PlayerPositionX || i !== PlayerPositionY) {
-	                return _react2.default.createElement('div', { style: { width: wdth / 13 + "px", height: hth / 11 + "px" }, className: "tile" + tile });
-	              } else {
+	              if (j === PlayerPositionX && i === PlayerPositionY) {
 	                return _react2.default.createElement('div', { style: { width: wdth / 13 + "px", height: hth / 11 + "px" }, className: "tileP" });
 	              }
+	              if (j === monsterX && i === monsterY) {
+	                return _react2.default.createElement('div', { style: { width: wdth / 13 + "px", height: hth / 11 + "px" }, className: "tileM" });
+	              }
+	              if (j === itemX && i === itemY) {
+	                return _react2.default.createElement('div', { style: { width: wdth / 13 + "px", height: hth / 11 + "px" }, className: "tileI" });
+	              }
+	              return _react2.default.createElement('div', { style: { width: wdth / 13 + "px", height: hth / 11 + "px" }, className: "tile" + tile });
 	            });
 	            return tile;
 	          })
 	        );
 	      }
-
-	      /*
-	            if (this.state.gameState = 'gameStart') {
-	            let newRoomGeneration = generateRoom();
-	            generateItem(newRoomGeneration);
-	            generateMonsters(newRoomGeneration);
-	            }
-	            */
 
 	      return _react2.default.createElement(
 	        'div',

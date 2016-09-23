@@ -33,6 +33,18 @@ body {
   background-color: pink;
   float:left;
 }
+.tileI{
+  background-color: gold;
+  float:left;
+}
+.tileM{
+  background-color: purple;
+  float:left;
+}
+.tileBlack{
+  background-color: black;
+  float:left;
+}
 .board{
   width:100%;
 position: relative;
