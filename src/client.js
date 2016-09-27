@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-var playerMovement = require('./PlayerMovement')
+import playerMovement from './PlayerMovement'
+import movingRooms from './MovingRooms'
 
 
 class GameBoard extends React.Component {
@@ -10,15 +11,15 @@ class GameBoard extends React.Component {
             gameWidth: 800,
             gameHeight: 600,
             gameState: 'loading', //player move, monsters move, loading, combat player, combat monster, inventory management
-            currentRoom: '', //RoomID####, ExitTop (bool), ExitBottom, ExitLeft, ExitRight
+            currentRoom: '', //RoomID####, ExitTop to room #, ExitBottom, ExitLeft, ExitRight
             roomCounter: 1,
             monsters: [], //[Room, 'x', 'y', HP]
             dungeonArray: [], //array for dungeon[[roomNumber, roomNumber, Null],[null, roomNumber, Null]]
             rooms: [], // [Room#, RoomArray]
             items: [], //[item######, "Potion", "x","y"]
-            player: [100,0,[6,5],1,0,10], //HP, RoomNumber in, position in room X,Y, Level, XP, attack
+            player: [100,1,[6,5],1,0,10], //HP, RoomNumber in, position in room X,Y, Level, XP, attack
             playerInventory: [], //[["itemname", qty]]
-            roomArrayRender: [],
+            roomArrayRender: [],//
             fog: false
         }
         this.runGame = this.runGame.bind(this)
@@ -26,6 +27,7 @@ class GameBoard extends React.Component {
         this.handleKeyPress = this.handleKeyPress.bind(this);
         this.generateMonster = this.generateMonster.bind(this)
         this.generateItem = this.generateItem.bind(this)
+        movingRooms.checkForRoomChange = movingRooms.checkForRoomChange.bind(this)
     }
 
     handleKeyPress(e) {
@@ -34,7 +36,10 @@ class GameBoard extends React.Component {
       var player = this.state.player;
       var roomToMoveIn =   this.state.roomArrayRender;
       var keyCode = e.keyCode;
+      var roomCounter = this.state.roomCounter;
       var move = playerMovement.playerMove(PlayerPositionX, PlayerPositionY, player, roomToMoveIn, keyCode)
+      movingRooms.checkForRoomChange(PlayerPositionX,PlayerPositionY, roomCounter, player)
+
       this.setState({
           player: move
       })
@@ -48,6 +53,8 @@ class GameBoard extends React.Component {
     }
 
     generateRoom(){
+
+
       var room = [
         [1,1,1,1,1,1,2,1,1,1,1,1,1],
         [1,0,0,0,0,0,0,0,0,0,0,0,1],
@@ -95,13 +102,13 @@ class GameBoard extends React.Component {
   }
     runGame() {
 
-      let gr = this.generateRoom(0);
-      let mr = this.generateMonster(0)
-      let ite = this.generateItem(0)
+      let gr = this.generateRoom(1);
+      let mr = this.generateMonster(1)
+      let ite = this.generateItem(1)
       let tempMonsterArray = this.state.monsters
       tempMonsterArray.push(mr)
       let tempRoomArray = this.state.rooms;
-      tempRoomArray.push([0, gr])
+      tempRoomArray.push([1, gr,null,null,null,null])
       let tempItemArray = this.state.items;
       tempItemArray.push(ite)
       this.setState({
@@ -132,6 +139,7 @@ class GameBoard extends React.Component {
       var itemX = 0;
       var itemY = 0;
       var fog = this.state.fog;
+      console.log(PlayerPositionX +","+PlayerPositionY)
 
       if (this.state.gameState === 'loading') {
       var toBeRendered = (<div className="GameStartScreen vertCenterText"><br/><br/>Are you Ready To Begin?<br/><br/><button onClick={this.runGame.bind(this)}>Start</button></div>);

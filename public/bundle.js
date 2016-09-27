@@ -74,9 +74,15 @@
 
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	var _PlayerMovement = __webpack_require__(258);
 
-	var playerMovement = __webpack_require__(258);
+	var _PlayerMovement2 = _interopRequireDefault(_PlayerMovement);
+
+	var _MovingRooms = __webpack_require__(259);
+
+	var _MovingRooms2 = _interopRequireDefault(_MovingRooms);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var GameBoard = function (_React$Component) {
 	  (0, _inherits3.default)(GameBoard, _React$Component);
@@ -90,15 +96,15 @@
 	      gameWidth: 800,
 	      gameHeight: 600,
 	      gameState: 'loading', //player move, monsters move, loading, combat player, combat monster, inventory management
-	      currentRoom: '', //RoomID####, ExitTop (bool), ExitBottom, ExitLeft, ExitRight
+	      currentRoom: '', //RoomID####, ExitTop to room #, ExitBottom, ExitLeft, ExitRight
 	      roomCounter: 1,
 	      monsters: [], //[Room, 'x', 'y', HP]
 	      dungeonArray: [], //array for dungeon[[roomNumber, roomNumber, Null],[null, roomNumber, Null]]
 	      rooms: [], // [Room#, RoomArray]
 	      items: [], //[item######, "Potion", "x","y"]
-	      player: [100, 0, [6, 5], 1, 0, 10], //HP, RoomNumber in, position in room X,Y, Level, XP, attack
+	      player: [100, 1, [6, 5], 1, 0, 10], //HP, RoomNumber in, position in room X,Y, Level, XP, attack
 	      playerInventory: [], //[["itemname", qty]]
-	      roomArrayRender: [],
+	      roomArrayRender: [], //
 	      fog: false
 	    };
 	    _this.runGame = _this.runGame.bind(_this);
@@ -106,6 +112,7 @@
 	    _this.handleKeyPress = _this.handleKeyPress.bind(_this);
 	    _this.generateMonster = _this.generateMonster.bind(_this);
 	    _this.generateItem = _this.generateItem.bind(_this);
+	    _MovingRooms2.default.checkForRoomChange = _MovingRooms2.default.checkForRoomChange.bind(_this);
 	    return _this;
 	  }
 
@@ -117,7 +124,10 @@
 	      var player = this.state.player;
 	      var roomToMoveIn = this.state.roomArrayRender;
 	      var keyCode = e.keyCode;
-	      var move = playerMovement.playerMove(PlayerPositionX, PlayerPositionY, player, roomToMoveIn, keyCode);
+	      var roomCounter = this.state.roomCounter;
+	      var move = _PlayerMovement2.default.playerMove(PlayerPositionX, PlayerPositionY, player, roomToMoveIn, keyCode);
+	      _MovingRooms2.default.checkForRoomChange(PlayerPositionX, PlayerPositionY, roomCounter, player);
+
 	      this.setState({
 	        player: move
 	      });
@@ -135,6 +145,7 @@
 	  }, {
 	    key: 'generateRoom',
 	    value: function generateRoom() {
+
 	      var room = [[1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1]];
 	      return room;
 	    }
@@ -176,13 +187,13 @@
 	    key: 'runGame',
 	    value: function runGame() {
 
-	      var gr = this.generateRoom(0);
-	      var mr = this.generateMonster(0);
-	      var ite = this.generateItem(0);
+	      var gr = this.generateRoom(1);
+	      var mr = this.generateMonster(1);
+	      var ite = this.generateItem(1);
 	      var tempMonsterArray = this.state.monsters;
 	      tempMonsterArray.push(mr);
 	      var tempRoomArray = this.state.rooms;
-	      tempRoomArray.push([0, gr]);
+	      tempRoomArray.push([1, gr, null, null, null, null]);
 	      var tempItemArray = this.state.items;
 	      tempItemArray.push(ite);
 	      this.setState({
@@ -211,6 +222,7 @@
 	      var itemX = 0;
 	      var itemY = 0;
 	      var fog = this.state.fog;
+	      console.log(PlayerPositionX + "," + PlayerPositionY);
 
 	      if (this.state.gameState === 'loading') {
 	        var toBeRendered = _react2.default.createElement(
@@ -23224,6 +23236,50 @@
 	        return player;
 	    }
 	  }
+	};
+
+/***/ },
+/* 259 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	module.exports = {
+	  checkForRoomChange: function checkForRoomChange(PlayerPositionX, PlayerPositionY, roomCounter, player) {
+	    if (PlayerPositionX === 0 && PlayerPositionY === 5) {
+	      var gr = this.generateRoom(roomCounter++);
+	      var mr = this.generateMonster(roomCounter);
+	      var ite = this.generateItem(roomCounter);
+	      var tempMonsterArray = this.state.monsters;
+	      tempMonsterArray.push(mr);
+	      var tempRoomArray = this.state.rooms;
+	      tempRoomArray.push([roomCounter, gr, null, null, player[1], null]); //left, up, right, down
+	      //update currentroom with exit
+	      var currentRoomB = 0;
+	      var currentRoomA = tempRoomArray.map(function (item, i) {
+	        if (item[0] === player[1]) {
+	          currentRoomB = i;
+	        }
+	      });
+	      tempRoomArray[currentRoomB].splice(2, 1, player[1]);
+
+	      player.splice(1, 1, roomCounter);
+	      player.splice(2, 1, [11, 5]);
+	      var tempItemArray = this.state.items;
+	      tempItemArray.push(ite);
+	      this.setState({
+	        gameState: "startGame",
+	        roomArrayRender: gr,
+	        monsters: tempMonsterArray,
+	        rooms: tempRoomArray,
+	        items: tempItemArray,
+	        roomCounter: roomCounter
+	      });
+	    }
+	  }
+
+	  //ending exports
+
 	};
 
 /***/ }
