@@ -126,8 +126,10 @@
 	      var keyCode = e.keyCode;
 	      var roomCounter = this.state.roomCounter;
 	      var move = _PlayerMovement2.default.playerMove(PlayerPositionX, PlayerPositionY, player, roomToMoveIn, keyCode);
+	      PlayerPositionX = move[2][0];
+	      PlayerPositionY = move[2][1];
 	      _MovingRooms2.default.checkForRoomChange(PlayerPositionX, PlayerPositionY, roomCounter, player);
-
+	      console.log(move[1]);
 	      this.setState({
 	        player: move
 	      });
@@ -23244,111 +23246,194 @@
 	"use strict";
 
 	module.exports = {
-	  checkForRoomChange: function checkForRoomChange(PlayerPositionX, PlayerPositionY, roomCounter, player) {
-	    //exit room left
-	    var currentRoomPlayer = player[1];
-	    console.log("room: " + player[1]);
-	    if (PlayerPositionX === 0 && PlayerPositionY === 5) {
+	    checkForRoomChange: function checkForRoomChange(PlayerPositionX, PlayerPositionY, roomCounter, player) {
+	        //exit room left
+	        var currentRoomPlayer = player[1];
+	        if (PlayerPositionX === 0 && PlayerPositionY === 5) {
 
-	      var tempRoomArray = this.state.rooms;
-	      var roomData = '';
-	      var roomDatab = tempRoomArray.map(function (item, i) {
-	        if (player[1] === item[0]) {
-	          roomData = [item, i];
+	            var tempRoomArray = this.state.rooms;
+	            var roomData = '';
+	            var roomDatab = tempRoomArray.map(function (item, i) {
+	                if (player[1] === item[0]) {
+	                    roomData = [item, i];
+	                }
+	            });
+	            if (roomData[0][2] !== null && roomData[0][2]) {
+	                console.log("room exists");
+	                player.splice(1, 1, roomData[0][2]);
+	                player.splice(2, 1, [11, 5]);
+	                tempRoomArray.splice(2, 1, player[1]);
+	                this.setState({ player: player, rooms: tempRoomArray });
+	            } else {
+	                var gr = this.generateRoom(roomCounter++);
+	                var mr = this.generateMonster(roomCounter);
+	                var ite = this.generateItem(roomCounter);
+	                var tempMonsterArray = this.state.monsters;
+	                tempMonsterArray.push(mr);
+	                var _tempRoomArray = this.state.rooms;
+	                // add last room to array
+	                _tempRoomArray.push([roomCounter, gr, null, null, player[1], null]); //left, up, right, down
+	                //update currentroom with exit
+	                var currentRoomB = 0;
+	                var currentRoomA = _tempRoomArray.map(function (item, i) {
+	                    if (item[0] == player[1]) {
+	                        currentRoomB = i;
+	                    }
+	                });
+	                _tempRoomArray[currentRoomB].splice(2, 1, roomCounter);
+
+	                player.splice(1, 1, roomCounter);
+	                player.splice(2, 1, [11, 5]);
+	                var tempItemArray = this.state.items;
+	                tempItemArray.push(ite);
+	                this.setState({
+	                    gameState: "startGame",
+	                    roomArrayRender: gr,
+	                    monsters: tempMonsterArray,
+	                    rooms: _tempRoomArray,
+	                    items: tempItemArray,
+	                    roomCounter: roomCounter
+	                });
+	            }
 	        }
-	      });
-	      if (roomData[0][2] !== null && roomData[0][2]) {
-	        console.log("room exists");
-	        player.splice(1, 1, roomData[0][2]);
-	        player.splice(2, 1, [11, 5]);
-	        tempRoomArray.splice(2, 1, player[1]);
-	        this.setState({
-	          player: player,
-	          rooms: tempRoomArray
-	        });
-	      } else {
-	        var gr = this.generateRoom(roomCounter++);
-	        var mr = this.generateMonster(roomCounter);
-	        var ite = this.generateItem(roomCounter);
-	        var tempMonsterArray = this.state.monsters;
-	        tempMonsterArray.push(mr);
-	        var _tempRoomArray = this.state.rooms;
-	        // add last room to array
-	        _tempRoomArray.push([roomCounter, gr, null, null, player[1], null]); //left, up, right, down
-	        //update currentroom with exit
-	        var currentRoomB = 0;
-	        var currentRoomA = _tempRoomArray.map(function (item, i) {
-	          if (item[0] == player[1]) {
-	            currentRoomB = i;
-	          }
-	        });
-	        _tempRoomArray[currentRoomB].splice(2, 1, roomCounter);
 
-	        player.splice(1, 1, roomCounter);
-	        player.splice(2, 1, [11, 5]);
-	        var tempItemArray = this.state.items;
-	        tempItemArray.push(ite);
-	        this.setState({
-	          gameState: "startGame",
-	          roomArrayRender: gr,
-	          monsters: tempMonsterArray,
-	          rooms: _tempRoomArray,
-	          items: tempItemArray,
-	          roomCounter: roomCounter
-	        });
-	      }
-	    }
+	        //exit from right
+	        if (PlayerPositionX === 12 && PlayerPositionY === 5) {
+	            var _tempRoomArray2 = this.state.rooms;
+	            var roomData = '';
+	            var roomDatab = _tempRoomArray2.map(function (item, i) {
+	                if (player[1] === item[0]) {
+	                    roomData = [item, i];
+	                    console.log(roomData);
+	                }
+	            });
+	            if (roomData[0][4] !== null && roomData[0][4]) {
+	                console.log(roomData[0][4]);
+	                player.splice(1, 1, roomData[0][4]);
+	                player.splice(2, 1, [2, 5]);
+	                this.setState({ player: player });
+	            } else {
+	                var _gr = this.generateRoom(roomCounter++);
+	                var _mr = this.generateMonster(roomCounter);
+	                var _ite = this.generateItem(roomCounter);
+	                var _tempMonsterArray = this.state.monsters;
+	                _tempMonsterArray.push(_mr);
+	                var _tempRoomArray3 = this.state.rooms;
+	                _tempRoomArray3.push([roomCounter, _gr, player[1], null, null, null]); //left, up, right, down
+	                //update currentroom with exit
+	                var currentRoomB = 0;
+	                var currentRoomA = _tempRoomArray3.map(function (item, i) {
+	                    if (item[0] == player[1]) {
+	                        currentRoomB = i;
+	                    }
+	                });
+	                _tempRoomArray3[currentRoomB].splice(4, 1, roomCounter);
 
-	    //exit from right
-	    if (PlayerPositionX === 12 && PlayerPositionY === 5) {
-	      var _tempRoomArray2 = this.state.rooms;
-	      var roomData = '';
-	      var roomDatab = _tempRoomArray2.map(function (item, i) {
-	        if (player[1] === item[0]) {
-	          roomData = [item, i];
-	          console.log(roomData);
+	                player.splice(1, 1, roomCounter);
+	                player.splice(2, 1, [1, 5]);
+	                var _tempItemArray = this.state.items;
+	                _tempItemArray.push(_ite);
+	                this.setState({
+	                    gameState: "startGame",
+	                    roomArrayRender: _gr,
+	                    monsters: _tempMonsterArray,
+	                    rooms: _tempRoomArray3,
+	                    items: _tempItemArray,
+	                    roomCounter: roomCounter
+	                });
+	            }
 	        }
-	      });
-	      if (roomData[0][4] !== null && roomData[0][4]) {
-	        console.log(roomData[0][4]);
-	        player.splice(1, 1, roomData[0][4]);
-	        player.splice(2, 1, [2, 5]);
-	        this.setState({
-	          player: player
-	        });
-	      } else {
-	        var _gr = this.generateRoom(roomCounter++);
-	        var _mr = this.generateMonster(roomCounter);
-	        var _ite = this.generateItem(roomCounter);
-	        var _tempMonsterArray = this.state.monsters;
-	        _tempMonsterArray.push(_mr);
-	        var _tempRoomArray3 = this.state.rooms;
-	        _tempRoomArray3.push([roomCounter, _gr, player[1], null, null, null]); //left, up, right, down
-	        //update currentroom with exit
-	        var currentRoomB = 0;
-	        var currentRoomA = _tempRoomArray3.map(function (item, i) {
-	          if (item[0] == player[1]) {
-	            currentRoomB = i;
-	          }
-	        });
-	        _tempRoomArray3[currentRoomB].splice(4, 1, roomCounter);
+	        //exit from Top
+	        if (PlayerPositionX === 6 && PlayerPositionY === 0) {
+	            var _tempRoomArray4 = this.state.rooms;
+	            var roomData = '';
+	            var roomDatab = _tempRoomArray4.map(function (item, i) {
+	                if (player[1] === item[0]) {
+	                    roomData = [item, i];
+	                }
+	            });
+	            if (roomData[0][3] !== null && roomData[0][3]) {
+	                player.splice(1, 1, roomData[0][3]);
+	                player.splice(2, 1, [6, 9]);
+	                this.setState({ player: player });
+	            } else {
+	                var _gr2 = this.generateRoom(roomCounter++);
+	                var _mr2 = this.generateMonster(roomCounter);
+	                var _ite2 = this.generateItem(roomCounter);
+	                var _tempMonsterArray2 = this.state.monsters;
+	                _tempMonsterArray2.push(_mr2);
+	                var _tempRoomArray5 = this.state.rooms;
+	                _tempRoomArray5.push([roomCounter, _gr2, null, null, null, player[1]]); //left, up, right, down
+	                //update currentroom with exit
+	                var currentRoomB = 0;
+	                var currentRoomA = _tempRoomArray5.map(function (item, i) {
+	                    if (item[0] == player[1]) {
+	                        currentRoomB = i;
+	                    }
+	                });
+	                _tempRoomArray5[currentRoomB].splice(3, 1, roomCounter);
 
-	        player.splice(1, 1, roomCounter);
-	        player.splice(2, 1, [1, 5]);
-	        var _tempItemArray = this.state.items;
-	        _tempItemArray.push(_ite);
-	        this.setState({
-	          gameState: "startGame",
-	          roomArrayRender: _gr,
-	          monsters: _tempMonsterArray,
-	          rooms: _tempRoomArray3,
-	          items: _tempItemArray,
-	          roomCounter: roomCounter
-	        });
-	      }
+	                player.splice(1, 1, roomCounter);
+	                player.splice(2, 1, [6, 9]);
+	                var _tempItemArray2 = this.state.items;
+	                _tempItemArray2.push(_ite2);
+	                this.setState({
+	                    gameState: "startGame",
+	                    roomArrayRender: _gr2,
+	                    monsters: _tempMonsterArray2,
+	                    rooms: _tempRoomArray5,
+	                    items: _tempItemArray2,
+	                    roomCounter: roomCounter
+	                });
+	            }
+	        }
+	        //exit from Bottom
+	        if (PlayerPositionX === 6 && PlayerPositionY === 10) {
+	            var _tempRoomArray6 = this.state.rooms;
+	            var roomData = '';
+	            var roomDatab = _tempRoomArray6.map(function (item, i) {
+	                if (player[1] === item[0]) {
+	                    roomData = [item, i];
+	                }
+	            });
+	            if (roomData[0][5] !== null && roomData[0][5]) {
+	                player.splice(1, 1, roomData[0][5]);
+	                player.splice(2, 1, [6, 1]);
+	                this.setState({ player: player });
+	            } else {
+	                var _gr3 = this.generateRoom(roomCounter++);
+	                var _mr3 = this.generateMonster(roomCounter);
+	                var _ite3 = this.generateItem(roomCounter);
+	                var _tempMonsterArray3 = this.state.monsters;
+	                _tempMonsterArray3.push(_mr3);
+	                var _tempRoomArray7 = this.state.rooms;
+	                _tempRoomArray7.push([roomCounter, _gr3, null, player[1], null, null]); //left, up, right, down
+	                //update currentroom with exit
+	                var currentRoomB = 0;
+	                var currentRoomA = _tempRoomArray7.map(function (item, i) {
+	                    if (item[0] == player[1]) {
+	                        currentRoomB = i;
+	                    }
+	                });
+	                _tempRoomArray7[currentRoomB].splice(5, 1, roomCounter);
+	                console.log(_tempRoomArray7);
+
+	                player.splice(1, 1, roomCounter);
+	                player.splice(2, 1, [6, 1]);
+	                var _tempItemArray3 = this.state.items;
+	                _tempItemArray3.push(_ite3);
+	                this.setState({
+	                    gameState: "startGame",
+	                    roomArrayRender: _gr3,
+	                    monsters: _tempMonsterArray3,
+	                    rooms: _tempRoomArray7,
+	                    items: _tempItemArray3,
+	                    roomCounter: roomCounter
+	                });
+	            }
+	        }
 	    }
-	  }
-	  //ending exports
+	    //ending exports
 
 	};
 

@@ -38,8 +38,10 @@ class GameBoard extends React.Component {
       var keyCode = e.keyCode;
       var roomCounter = this.state.roomCounter;
       var move = playerMovement.playerMove(PlayerPositionX, PlayerPositionY, player, roomToMoveIn, keyCode)
+      PlayerPositionX = move[2][0];
+      PlayerPositionY = move[2][1];
       movingRooms.checkForRoomChange(PlayerPositionX,PlayerPositionY, roomCounter, player)
-      
+      console.log(move[1])
       this.setState({
           player: move
       })
