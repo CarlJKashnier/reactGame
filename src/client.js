@@ -14,6 +14,7 @@ class GameBoard extends React.Component {
             currentRoom: '', //RoomID####, ExitTop to room #, ExitBottom, ExitLeft, ExitRight
             roomCounter: 1,
             monsters: [], //[Room, 'x', 'y', HP]
+            boss: [],
             dungeonArray: [], //array for dungeon[[roomNumber, roomNumber, Null],[null, roomNumber, Null]]
             rooms: [], // [Room#, RoomArray]
             items: [], //[item######, "Potion", "x","y"]
@@ -41,7 +42,6 @@ class GameBoard extends React.Component {
       PlayerPositionX = move[2][0];
       PlayerPositionY = move[2][1];
       movingRooms.checkForRoomChange(PlayerPositionX,PlayerPositionY, roomCounter, player)
-      console.log(move[1])
       this.setState({
           player: move
       })
@@ -73,9 +73,24 @@ class GameBoard extends React.Component {
     return room;
   }
   generateMonster(roomNumber){
+    var isBoss = Math.floor(Math.random() * (30))
+    var boss = []
+    if (isBoss < 1 && this.state.boss.length < 1)
+    {boss.push(this.generateBoss(roomNumber))
+
+      this.setState({
+        boss: boss
+      })
+    }
     var monsterX = Math.floor(Math.random() * (10 - 3)) + 3;
     var monsterY = Math.floor(Math.random() * (8 - 3)) + 3;
     var monsterHP = Math.floor(Math.random() * (50 - 20)) + 20;
+    return([roomNumber, monsterX, monsterY, monsterHP])
+  }
+  generateBoss(roomNumber){
+    var monsterX = Math.floor(Math.random() * (10 - 3)) + 3;
+    var monsterY = Math.floor(Math.random() * (8 - 3)) + 3;
+    var monsterHP = (Math.floor(Math.random() * (50 - 20)) + 20)*10;
     return([roomNumber, monsterX, monsterY, monsterHP])
   }
   generateItem(roomNumber){
@@ -135,9 +150,12 @@ class GameBoard extends React.Component {
       var PlayerPositionY = this.state.player[2][1];
       var monsters = this.state.monsters;
       var items = this.state.items;
+      var boss = this.state.boss;
       var currentRoom = this.state.player[1];
       var monsterX = 0;
       var monsterY = 0;
+      var bossX = -1;
+      var bossY = -1;
       var itemX = 0;
       var itemY = 0;
       var fog = this.state.fog;
@@ -161,6 +179,12 @@ class GameBoard extends React.Component {
         monsterY = monsters[i][2];
       }
     }
+    for(var i=0; i<boss.length; i++){
+    if(boss[i][0] === currentRoom && boss[i][3] > 0){
+      bossX = boss[i][1];
+      bossY = boss[i][2];
+    }
+  }
       var toBeRendered = (<div className="GameScreen">{this.state.roomArrayRender.map(function(row, i){
         var tile = row.map(function(tile, j){
         if (j === PlayerPositionX && i === PlayerPositionY) {
@@ -174,6 +198,9 @@ return (<div style={{width: wdth / 13 + "px", height: hth / 11 + "px"}} classNam
 } else {
   if (j === monsterX && i === monsterY) {
   return (<div style={{width: wdth / 13 + "px", height: hth / 11 + "px"}} className={"tileM"  }></div>)
+}
+if (j === bossX && i === bossY) {
+return (<div style={{width: wdth / 13 + "px", height: hth / 11 + "px"}} className={"tileB"  }></div>)
 }
 if (j === itemX && i === itemY) {
 return (<div style={{width: wdth / 13 + "px", height: hth / 11 + "px"}} className={"tileI"  }></div>)

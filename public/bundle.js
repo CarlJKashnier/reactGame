@@ -99,6 +99,7 @@
 	      currentRoom: '', //RoomID####, ExitTop to room #, ExitBottom, ExitLeft, ExitRight
 	      roomCounter: 1,
 	      monsters: [], //[Room, 'x', 'y', HP]
+	      boss: [],
 	      dungeonArray: [], //array for dungeon[[roomNumber, roomNumber, Null],[null, roomNumber, Null]]
 	      rooms: [], // [Room#, RoomArray]
 	      items: [], //[item######, "Potion", "x","y"]
@@ -129,7 +130,6 @@
 	      PlayerPositionX = move[2][0];
 	      PlayerPositionY = move[2][1];
 	      _MovingRooms2.default.checkForRoomChange(PlayerPositionX, PlayerPositionY, roomCounter, player);
-	      console.log(move[1]);
 	      this.setState({
 	        player: move
 	      });
@@ -154,9 +154,26 @@
 	  }, {
 	    key: 'generateMonster',
 	    value: function generateMonster(roomNumber) {
+	      var isBoss = Math.floor(Math.random() * 30);
+	      var boss = [];
+	      if (isBoss < 1 && this.state.boss.length < 1) {
+	        boss.push(this.generateBoss(roomNumber));
+
+	        this.setState({
+	          boss: boss
+	        });
+	      }
 	      var monsterX = Math.floor(Math.random() * (10 - 3)) + 3;
 	      var monsterY = Math.floor(Math.random() * (8 - 3)) + 3;
 	      var monsterHP = Math.floor(Math.random() * (50 - 20)) + 20;
+	      return [roomNumber, monsterX, monsterY, monsterHP];
+	    }
+	  }, {
+	    key: 'generateBoss',
+	    value: function generateBoss(roomNumber) {
+	      var monsterX = Math.floor(Math.random() * (10 - 3)) + 3;
+	      var monsterY = Math.floor(Math.random() * (8 - 3)) + 3;
+	      var monsterHP = (Math.floor(Math.random() * (50 - 20)) + 20) * 10;
 	      return [roomNumber, monsterX, monsterY, monsterHP];
 	    }
 	  }, {
@@ -218,9 +235,12 @@
 	      var PlayerPositionY = this.state.player[2][1];
 	      var monsters = this.state.monsters;
 	      var items = this.state.items;
+	      var boss = this.state.boss;
 	      var currentRoom = this.state.player[1];
 	      var monsterX = 0;
 	      var monsterY = 0;
+	      var bossX = -1;
+	      var bossY = -1;
 	      var itemX = 0;
 	      var itemY = 0;
 	      var fog = this.state.fog;
@@ -256,6 +276,12 @@
 	            monsterY = monsters[i][2];
 	          }
 	        }
+	        for (var i = 0; i < boss.length; i++) {
+	          if (boss[i][0] === currentRoom && boss[i][3] > 0) {
+	            bossX = boss[i][1];
+	            bossY = boss[i][2];
+	          }
+	        }
 	        var toBeRendered = _react2.default.createElement(
 	          'div',
 	          { className: 'GameScreen' },
@@ -271,6 +297,9 @@
 	              } else {
 	                if (j === monsterX && i === monsterY) {
 	                  return _react2.default.createElement('div', { style: { width: wdth / 13 + "px", height: hth / 11 + "px" }, className: "tileM" });
+	                }
+	                if (j === bossX && i === bossY) {
+	                  return _react2.default.createElement('div', { style: { width: wdth / 13 + "px", height: hth / 11 + "px" }, className: "tileB" });
 	                }
 	                if (j === itemX && i === itemY) {
 	                  return _react2.default.createElement('div', { style: { width: wdth / 13 + "px", height: hth / 11 + "px" }, className: "tileI" });
@@ -23243,7 +23272,7 @@
 /* 259 */
 /***/ function(module, exports) {
 
-	"use strict";
+	'use strict';
 
 	module.exports = {
 	    checkForRoomChange: function checkForRoomChange(PlayerPositionX, PlayerPositionY, roomCounter, player) {
@@ -23259,7 +23288,7 @@
 	                }
 	            });
 	            if (roomData[0][2] !== null && roomData[0][2]) {
-	                console.log("room exists");
+
 	                player.splice(1, 1, roomData[0][2]);
 	                player.splice(2, 1, [11, 5]);
 	                tempRoomArray.splice(2, 1, player[1]);
@@ -23304,11 +23333,10 @@
 	            var roomDatab = _tempRoomArray2.map(function (item, i) {
 	                if (player[1] === item[0]) {
 	                    roomData = [item, i];
-	                    console.log(roomData);
 	                }
 	            });
 	            if (roomData[0][4] !== null && roomData[0][4]) {
-	                console.log(roomData[0][4]);
+
 	                player.splice(1, 1, roomData[0][4]);
 	                player.splice(2, 1, [2, 5]);
 	                this.setState({ player: player });
@@ -23416,8 +23444,6 @@
 	                    }
 	                });
 	                _tempRoomArray7[currentRoomB].splice(5, 1, roomCounter);
-	                console.log(_tempRoomArray7);
-
 	                player.splice(1, 1, roomCounter);
 	                player.splice(2, 1, [6, 1]);
 	                var _tempItemArray3 = this.state.items;

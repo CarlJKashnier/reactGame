@@ -12,7 +12,7 @@ module.exports = {
                 }
             })
             if (roomData[0][2] !== null && roomData[0][2]) {
-                console.log("room exists")
+
                 player.splice(1, 1, roomData[0][2])
                 player.splice(2, 1, [11, 5])
                 tempRoomArray.splice(2, 1, player[1])
@@ -65,11 +65,11 @@ module.exports = {
             var roomDatab = tempRoomArray.map(function(item, i) {
                 if (player[1] === item[0]) {
                     roomData = [item, i]
-                    console.log(roomData)
+
                 }
             })
             if (roomData[0][4] !== null && roomData[0][4]) {
-                console.log(roomData[0][4])
+
                 player.splice(1, 1, roomData[0][4])
                 player.splice(2, 1, [2, 5])
                 this.setState({player: player})
@@ -201,8 +201,6 @@ module.exports = {
                     }
                 })
                 tempRoomArray[currentRoomB].splice(5, 1, roomCounter)
-                console.log(tempRoomArray)
-
                 player.splice(1, 1, roomCounter)
                 player.splice(2, 1, [6, 1])
                 let tempItemArray = this.state.items;
