@@ -20,34 +20,42 @@ body {
 
 .tile1 {
   background-color: black;
+  float: left;
 }
 
 .tile2 {
   background-color: green;
+    float: left;
 }
 
 .tile0 {
   background-color: brown;
+    float: left;
 }
 
 .tileP {
   background-color: pink;
+    float: left;
 }
 
 .tileI {
   background-color: gold;
+    float: left;
 }
 
 .tileM {
   background-color: red;
+    float: left;
 }
 
 .tileB {
   background-color: purple;
+    float: left;
 }
 
 .tileBlack {
   background-color: black;
+    float: left;
 }
 
 .board {
