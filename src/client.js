@@ -21,7 +21,7 @@ class GameBoard extends React.Component {
             player: [100,1,[6,5],1,0,10], //HP, RoomNumber in, position in room X,Y, Level, XP, attack
             playerInventory: [], //[["itemname", qty]]
             roomArrayRender: [],//
-            fog: false
+            fog: true
         }
         this.runGame = this.runGame.bind(this)
         this.generateRoom = this.generateRoom.bind(this)
@@ -34,13 +34,150 @@ class GameBoard extends React.Component {
     handleKeyPress(e) {
       var PlayerPositionX = this.state.player[2][0];
       var PlayerPositionY = this.state.player[2][1];
+      var PlayerPositionXori = this.state.player[2][0];
+      var PlayerPositionYori = this.state.player[2][1];
+      var monsters = this.state.monsters;
+      var items = this.state.items;
+      var boss = this.state.boss;
+      var currentRoom = this.state.player[1];
+      var monsterX = 0;
+      var monsterY = 0;
+      var monster = []
+      var monsterIndex
+      var bossX = -1;
+      var bossY = -1;
+      var itemX = 0;
+      var itemY = 0;
+      var itemInIndex = 0
       var player = this.state.player;
       var roomToMoveIn =   this.state.roomArrayRender;
       var keyCode = e.keyCode;
       var roomCounter = this.state.roomCounter;
+      //Figure out where all items and triggers are in the room
+      for(var i=0; i<items.length; i++){
+        if(items[i][3] === currentRoom){
+          itemX = items[i][0];
+          itemY = items[i][1];
+          itemInIndex = i;
+        }
+      }
+      for(var i=0; i<monsters.length; i++){
+      if(monsters[i][0] === currentRoom && monsters[i][3] > 0){
+        monsterX = monsters[i][1];
+        monsterY = monsters[i][2];
+        var monster = monsters[i]
+        var monsterIndex = i
+      }
+    }
+    for(var i=0; i<boss.length; i++){
+    if(boss[i][0] === currentRoom && boss[i][3] > 0){
+      bossX = boss[i][1];
+      bossY = boss[i][2];
+      var boss = boss[i]
+      var bossIndex = i
+    }
+  }
+  //end figureout where stuff is
       var move = playerMovement.playerMove(PlayerPositionX, PlayerPositionY, player, roomToMoveIn, keyCode)
       PlayerPositionX = move[2][0];
       PlayerPositionY = move[2][1];
+      if (PlayerPositionX === itemX && PlayerPositionY === itemY){
+        console.log(items[i])
+        var whatItemState = items[i][2]
+        items.splice(i,1)
+        console.log(items)
+        switch (whatItemState){
+          case "Att":
+          var currentAttack = move[5];
+          move.splice(5,1, currentAttack + 10);
+          break;
+          case "Trap":
+          var currentHP = move[0];
+          move.splice(0,1, currentHP - 10);
+          break;
+          case "HP":
+          var currentHP = move[0];
+          move.splice(0,1, currentHP + 15);
+          break;
+        }
+
+      }
+      if (PlayerPositionX === monsterX && PlayerPositionY === monsterY && monster[3] > 0){
+        //No move into monster Sq
+        var monsterHP = monster[3]
+        var playerDamage = (Math.floor(Math.random() * move[5] * (1 + (.1 * move[3]))))
+        monster.splice(3,1,monsterHP-playerDamage)
+        move[2].splice(0,1,PlayerPositionXori)
+        move[2].splice(1,1,PlayerPositionYori)
+        var monsterDamage = (Math.floor(Math.random() * (5-3) + 3))
+        var playerHP = move[0]
+        if(monster[3] > 0){
+        move.splice(0,1,playerHP - monsterDamage)
+        monsters.splice(monsterIndex,1,monster)
+      } else {
+        var playerXP = move[4]
+        move.splice(4,1,playerXP + 10)
+        if((playerXP + 10) <= 40){
+          move.splice(3,1,1)
+        }
+        if((playerXP + 10) > 40 && (playerXP + 10) <= 100){
+          move.splice(3,1,2)
+        }
+        if((playerXP + 10) > 100 && (playerXP + 10) <= 200){
+          move.splice(3,1,3)
+        }
+        if((playerXP + 10) > 200 && (playerXP + 10) <= 350){
+          move.splice(3,1,4)
+        }
+        if((playerXP + 10) > 500){
+          move.splice(3,1,5)
+        }
+
+      }
+        this.setState({
+          monsters: monsters
+        })
+      }
+//boss fights
+      if (PlayerPositionX === bossX && PlayerPositionY === bossY && boss[3] > 0){
+        //No move into monster Sq
+        var monsterHP = boss[3]
+        var playerDamage = (Math.floor(Math.random() * move[5] * (1 + (.1 * move[3]))))
+        monster.splice(3,1,monsterHP-playerDamage)
+        move[2].splice(0,1,PlayerPositionXori)
+        move[2].splice(1,1,PlayerPositionYori)
+        var monsterDamage = (Math.floor(Math.random() * (10-7) + 3))
+        var playerHP = move[0]
+        if(monster[3] > 0){
+        move.splice(0,1,playerHP - monsterDamage)
+        monsters.splice(monsterIndex,1,monster)
+      } else {
+        alert("You've won! Welcome to free play, you can refresh to start over.")
+        var playerXP = move[4]
+        move.splice(4,1,playerXP + 1000)
+        if((playerXP + 10) <= 40){
+          move.splice(3,1,1)
+        }
+        if((playerXP + 10) > 40 && (playerXP + 10) <= 100){
+          move.splice(3,1,2)
+        }
+        if((playerXP + 10) > 100 && (playerXP + 10) <= 200){
+          move.splice(3,1,3)
+        }
+        if((playerXP + 10) > 200 && (playerXP + 10) <= 350){
+          move.splice(3,1,4)
+        }
+        if((playerXP + 10) > 500){
+          move.splice(3,1,5)
+        }
+
+      }
+        this.setState({
+          monsters: monsters
+        })
+      }
+
+
       movingRooms.checkForRoomChange(PlayerPositionX,PlayerPositionY, roomCounter, player)
       this.setState({
           player: move
@@ -152,21 +289,52 @@ class GameBoard extends React.Component {
       var items = this.state.items;
       var boss = this.state.boss;
       var currentRoom = this.state.player[1];
-      var monsterX = 0;
-      var monsterY = 0;
+      var monsterX = -1;
+      var monsterY = -1;
       var bossX = -1;
       var bossY = -1;
-      var itemX = 0;
-      var itemY = 0;
+      var itemX = -1;
+      var itemY = -1;
       var fog = this.state.fog;
 
 
       if (this.state.gameState === 'loading') {
       var toBeRendered = (<div className="GameStartScreen vertCenterText"><br/><br/>Are you Ready To Begin?<br/><br/><button onClick={this.runGame.bind(this)}>Start</button></div>);
+      var statsForRender = ""
       }
 
       if (this.state.gameState === 'startGame') {
       //Figure out monster
+      if (this.state.player[0]<=0){
+        alert("You've Died");
+        location.reload();
+      }
+      var weaponName = ""
+      switch(true){
+        case this.state.player[5] <= 10:
+        weaponName = "Fists"
+        break;
+        case this.state.player[5] > 10 && this.state.player[5] <20:
+        weaponName = "Brass Monkey"
+        break;
+        case this.state.player[5] > 19 && this.state.player[5] <30:
+        weaponName = "Garden Rake"
+        break;
+        case this.state.player[5] > 29 && this.state.player[5] <40:
+        weaponName = "Garden Snake"
+        break;
+        case this.state.player[5] > 39 && this.state.player[5] <50:
+        weaponName = "Chain Saw"
+        break;
+        case this.state.player[5] > 49 && this.state.player[5] <60:
+        weaponName = "Holy Chainsaw of Antioch"
+        break;
+        case this.state.player[5] >= 60:
+        weaponName = "Holy Chainsaw of Antioch 3 blades"
+        break;
+      }
+
+      var statsForRender = (<div><center><h2>HP: {this.state.player[0]} Level: {this.state.player[3]} XP: {this.state.player[4]} Weapon: {weaponName} {this.state.player[5]}</h2></center></div>)
       for(var i=0; i<items.length; i++){
         if(items[i][3] === currentRoom){
           itemX = items[i][0];
@@ -207,17 +375,16 @@ return (<div style={{width: wdth / 13 + "px", height: hth / 11 + "px"}} classNam
 }
   return (<div style={{width: wdth / 13 + "px", height: hth / 11 + "px"}} className={"tile" + tile}></div>)
 }
-
-      })
+})
       return tile;
       })
     }
       </div>)
       }
 
-        return (<div className="board">
+        return (<div><div className="board">
         {toBeRendered}
-        </div>
+        </div>{statsForRender}</div>
         )
     }
 }

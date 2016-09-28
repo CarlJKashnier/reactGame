@@ -6,7 +6,7 @@
   "scripts": {
     "webpack-watch": "webpack -w",
     "express-server": "node ./app",
-    "dev": "concurrent --kill-others \"npm run webpack-watch\" \"npm run express-server\"",
+    "dev": "concurrently --kill-others \"npm run webpack-watch\" \"npm run express-server\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -26,6 +26,11 @@
     "webpack": "^1.13.2"
   },
   "devDependencies": {
-    "concurrently": "^2.2.0"
+    "concurrently": "^2.2.0",
+    "css-loader": "^0.25.0",
+    "node-sass": "^3.10.0",
+    "sass-loader": "^4.0.2",
+    "style-loader": "^0.13.1",
+    "webpack": "^1.13.2"
   }
 }
