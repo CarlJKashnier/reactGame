@@ -39,7 +39,7 @@ class GameBoard extends React.Component {
       var roomCounter = this.state.roomCounter;
       var move = playerMovement.playerMove(PlayerPositionX, PlayerPositionY, player, roomToMoveIn, keyCode)
       movingRooms.checkForRoomChange(PlayerPositionX,PlayerPositionY, roomCounter, player)
-
+      
       this.setState({
           player: move
       })
@@ -139,7 +139,7 @@ class GameBoard extends React.Component {
       var itemX = 0;
       var itemY = 0;
       var fog = this.state.fog;
-      console.log(PlayerPositionX +","+PlayerPositionY)
+
 
       if (this.state.gameState === 'loading') {
       var toBeRendered = (<div className="GameStartScreen vertCenterText"><br/><br/>Are you Ready To Begin?<br/><br/><button onClick={this.runGame.bind(this)}>Start</button></div>);
